@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Meta Market</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- TON Connect SDK -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
             --bg-color: #0d0d11;
             --card-bg: #15151c;
-            --card-border: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.08);
             --accent-color: #8b5cf6;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
@@ -34,7 +32,6 @@
             padding-bottom: 100px;
         }
 
-        /* Шапка */
         header {
             display: flex;
             justify-content: space-between;
@@ -97,7 +94,6 @@
             justify-content: flex-end;
         }
 
-        /* Баннер */
         .banner {
             background: linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(21, 21, 28, 0) 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
@@ -118,7 +114,6 @@
             color: var(--text-sub);
         }
 
-        /* Поиск и категории */
         .controls {
             display: flex;
             flex-direction: column;
@@ -163,7 +158,6 @@
             border-color: #ffffff;
         }
 
-        /* Сетка подарков */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -216,19 +210,25 @@
         }
 
         .img-container img {
-            max-width: 100px;
-            max-height: 100px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
         }
 
         .card-title {
             font-size: 14px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
         }
 
         .price-box {
@@ -265,7 +265,6 @@
             width: 100%;
         }
 
-        /* Футер */
         .footer-action {
             position: fixed;
             bottom: 0;
@@ -290,7 +289,6 @@
             cursor: pointer;
         }
 
-        /* Экран профиля */
         .profile-screen {
             display: none;
             flex-direction: column;
@@ -363,7 +361,6 @@
             font-size: 13px;
         }
 
-        /* Модальные окна */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -391,17 +388,17 @@
         }
 
         .modal-gift-img {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             object-fit: contain;
             margin: 10px auto 16px;
-            filter: drop-shadow(0 8px 20px rgba(124, 58, 237, 0.3));
+            filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.4));
         }
 
         .modal-title {
             font-size: 20px;
             font-weight: 800;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .modal-supply {
@@ -482,7 +479,6 @@
         </div>
     </header>
 
-    <!-- Главная страница Маркета -->
     <div id="marketPage">
         <div class="banner">
             <h2>Маркетплейс NFT Подарков</h2>
@@ -502,7 +498,6 @@
         <div class="grid" id="itemsGrid"></div>
     </div>
 
-    <!-- Страница Профиля -->
     <div id="profilePage" class="profile-screen">
         <div class="profile-card">
             <div class="user-avatar" id="profileAvatarBig">
@@ -533,11 +528,12 @@
         <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
     </div>
 
-    <!-- Модалка детального просмотра подарка (Прямо внутри приложения) -->
+    <!-- Модальное окно просмотра подарка -->
     <div class="modal-overlay" id="viewGiftModal">
         <div class="modal-content">
             <img src="" id="modalGiftImg" class="modal-gift-img" alt="NFT Gift">
             <div class="modal-title" id="modalGiftTitle">Gift Name</div>
+            <div id="modalGiftSub" style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">(Название)</div>
             <div class="modal-supply" id="modalGiftSupply">#1 / 10K</div>
             
             <div class="modal-price-card">
@@ -553,7 +549,7 @@
         </div>
     </div>
 
-    <!-- Модалка инструкции продажи -->
+    <!-- Модальное окно инструкции продажи -->
     <div class="modal-overlay" id="sellModal">
         <div class="modal-content">
             <div class="modal-title">Как продать подарок?</div>
@@ -578,7 +574,6 @@
         // СТРОГИЙ КУРС: 1 GRAM = 1.44 USD
         const GRAM_PRICE_USD = 1.44;
 
-        // Данные профиля Telegram
         const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user", photo_url: "" };
         
         function initUserProfile() {
@@ -600,70 +595,36 @@
             }
         }
 
-        // Базовая функция генерации реальных CDN изображений для NFT подарков Telegram
-        function getGiftImage(name) {
-            const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            return `https://nft.fragment.com/gift/${cleanName}.webp`;
-        }
-
-        // Полная база из 97 подарков Telegram с корректными названиями и тиражами
-        const rawGifts = [
-            { name: "Plush Pepe", priceGram: 5150, supply: "#3K / 5K", cat: "rare" },
-            { name: "Durov's Glasses", priceGram: 92.5, supply: "#5K / 10K", cat: "premium" },
-            { name: "Heroic Helmet", priceGram: 165, supply: "#8K / 10K", cat: "premium" },
-            { name: "Gold Helmet", priceGram: 210, supply: "#2K / 5K", cat: "premium" },
-            { name: "Astral Shard", priceGram: 114, supply: "#10K / 25K", cat: "rare" },
-            { name: "Artisan Brick", priceGram: 52.7, supply: "#7K / 15K", cat: "rare" },
-            { name: "Swiss Watch", priceGram: 47.2, supply: "#50K / 100K", cat: "premium" },
-            { name: "Diamond Ring", priceGram: 180, supply: "#1K / 3K", cat: "rare" },
-            { name: "Bonded Ring", priceGram: 38, supply: "#9K / 18K", cat: "rare" },
-            { name: "Bling Binky", priceGram: 23, supply: "#10K / 20K", cat: "rare" },
-            { name: "Rare Bird", priceGram: 24.4, supply: "#15K / 20K", cat: "rare" },
-            { name: "Fine Pen", priceGram: 8.9, supply: "#49.5K / 50K", cat: "premium" },
-            { name: "Berry Box", priceGram: 8.68, supply: "#100K / 250K", cat: "popular" },
-            { name: "Jingle Bells", priceGram: 7.85, supply: "#200K / 500K", cat: "popular" },
-            { name: "Spring Basket", priceGram: 5.09, supply: "#250K / 600K", cat: "popular" },
-            { name: "Bow Tie", priceGram: 4.92, supply: "#100K / 250K", cat: "popular" },
-            { name: "B-Day Candle", priceGram: 4.6, supply: "#500K / 1M", cat: "popular" },
-            { name: "Big Year", priceGram: 4.55, supply: "#200K / 400K", cat: "popular" },
-            { name: "Victory Medal", priceGram: 4.49, supply: "#150K / 300K", cat: "popular" },
-            { name: "Desk Calendar", priceGram: 4.4, supply: "#500K / 1M", cat: "popular" },
-            { name: "Sakura Flower", priceGram: 9.58, supply: "#100K / 200K", cat: "popular" },
-            { name: "Magic Potion", priceGram: 54.4, supply: "#11K / 15K", cat: "rare" },
-            { name: "Golden Crown", priceGram: 340, supply: "#500 / 1K", cat: "premium" },
-            { name: "Neon Skull", priceGram: 88, supply: "#4K / 8K", cat: "rare" },
-            { name: "Cyber Duck", priceGram: 65, supply: "#12K / 25K", cat: "rare" },
-            { name: "Crystal Rose", priceGram: 29.5, supply: "#30K / 60K", cat: "popular" },
-            { name: "Red Heart", priceGram: 6.2, supply: "#300K / 800K", cat: "popular" },
-            { name: "Lucky Clover", priceGram: 12.8, supply: "#80K / 150K", cat: "popular" }
+        // РОВНЫЕ НАЗВАНИЯ ИЗ ТВОЕГО СПИСКА
+        const allGiftsList = [
+            { name: "Vintage Lamp", ruName: "Лампочка", priceGram: 18.5, supply: "#12K / 25K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Neon Heart", ruName: "Неоновое сердце", priceGram: 45.0, supply: "#5K / 10K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Astronaut Helmet", ruName: "Шлем космонавта", priceGram: 165.0, supply: "#1K / 3K", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Flying Broom", ruName: "Летающая метла", priceGram: 22.0, supply: "#15K / 30K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Magic Potion", ruName: "Магическое зелье", priceGram: 54.0, supply: "#8K / 15K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Bento Box", ruName: "Бенто-бокс", priceGram: 12.5, supply: "#40K / 80K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Perfume Bottle", ruName: "Флакон духов", priceGram: 38.0, supply: "#9K / 20K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Eternal Rose", ruName: "Роза", priceGram: 29.5, supply: "#30K / 60K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Teddy Bear", ruName: "Мишка", priceGram: 15.0, supply: "#50K / 100K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+            { name: "Lolli Bear", ruName: "Леденец-мишка", priceGram: 9.8, supply: "#80K / 150K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
+            { name: "Santa Hat", ruName: "Колпак Санты", priceGram: 14.5, supply: "#50K / 100K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
+            { name: "Homemade Cake", ruName: "Домашний торт", priceGram: 11.0, supply: "#60K / 120K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Jelly Bunny", ruName: "Желейный кролик", priceGram: 8.2, supply: "#100K / 200K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Spiced Wine", ruName: "Глинтвейн", priceGram: 16.0, supply: "#35K / 70K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Gingerbread Man", ruName: "Имбирный пряник", priceGram: 6.7, supply: "#150K / 300K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
+            { name: "Christmas Tree", ruName: "Новогодняя елка", priceGram: 31.0, supply: "#10K / 30K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Jack-o'-Lantern", ruName: "Тыква на Хэллоуин", priceGram: 27.0, supply: "#25K / 50K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Party Sparkler", ruName: "Бенгальский огонь", priceGram: 5.4, supply: "#200K / 500K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Snoop Dogg Chain", ruName: "Коллекция Snoop Dogg", priceGram: 850.0, supply: "#100 / 500", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png" },
+            { name: "Papakha", ruName: "Папаха Хабиба", priceGram: 420.0, supply: "#300 / 1K", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" }
         ];
 
-        // Генерация остальных атрибутов Telegram до 97 позиций
-        const categories = ["rare", "premium", "popular"];
-        const namesPool = ["Diamond", "Ruby", "Sapphire", "Emerald", "Topaz", "Amethyst", "Golden", "Silver", "Bronze", "Cyber", "Aero", "Vortex", "Cosmic", "Lunar", "Solar"];
-        const typesPool = ["Shield", "Sword", "Key", "Scepter", "Orb", "Chest", "Badge", "Token", "Scroll", "Lantern", "Compass", "Hourglass", "Mask", "Trophy", "Coin"];
+        const items = allGiftsList.map((item, idx) => ({
+            id: idx + 1,
+            ...item
+        }));
 
-        let items = [...rawGifts.map((item, idx) => ({ ...item, id: idx + 1, img: getGiftImage(item.name) }))];
-
-        let idCounter = items.length + 1;
-        while (items.length < 97) {
-            const randomName = namesPool[Math.floor(Math.random() * namesPool.length)] + " " + typesPool[Math.floor(Math.random() * typesPool.length)];
-            const price = parseFloat((Math.random() * 80 + 3).toFixed(2));
-            const limit = Math.floor(Math.random() * 100) + 1;
-            const cat = categories[Math.floor(Math.random() * categories.length)];
-            
-            items.push({
-                id: idCounter,
-                name: randomName,
-                priceGram: price,
-                supply: `#${limit}K / ${limit * 2}K`,
-                cat: cat,
-                img: getGiftImage(randomName)
-            });
-            idCounter++;
-        }
-
-        // Инвентарь ПО УМОЛЧАНИЮ ПУСТОЙ!
+        // ПУСТОЙ ИНВЕНТАРЬ
         const userInventory = [];
 
         let currentCategory = 'all';
@@ -681,9 +642,10 @@
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <img src="${item.img}" onerror="this.onerror=null; this.src='https://nft.fragment.com/gift/finepen.webp';" alt="${item.name}">
+                            <img src="${item.img}" alt="${item.name}">
                         </div>
                         <div class="card-title">${item.name}</div>
+                        <div class="card-sub">${item.ruName}</div>
                         <div class="price-box">
                             <span class="price-ton">${item.priceGram} GRAM</span>
                             <span class="price-usd">${priceUsd}</span>
@@ -698,7 +660,7 @@
             const grid = document.getElementById('inventoryGrid');
             grid.innerHTML = '';
             if (userInventory.length === 0) {
-                grid.innerHTML = '<div class="empty-inv">У вас пока нет вынесенных на продажу подарков.<br>Нажмите «Продать свой NFT подарок» снизу.</div>';
+                grid.innerHTML = '<div class="empty-inv">У вас пока нет выставленных на продажу подарков.<br>Нажмите «Продать свой NFT подарок» снизу.</div>';
                 return;
             }
         }
@@ -709,6 +671,7 @@
 
             document.getElementById('modalGiftImg').src = item.img;
             document.getElementById('modalGiftTitle').innerText = item.name;
+            document.getElementById('modalGiftSub').innerText = `(${item.ruName})`;
             document.getElementById('modalGiftSupply').innerText = item.supply;
             document.getElementById('modalGiftGram').innerText = `${item.priceGram} GRAM`;
             document.getElementById('modalGiftUsd').innerText = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -728,7 +691,7 @@
         function filterItems() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filtered = items.filter(item => {
-                const matchesSearch = item.name.toLowerCase().includes(search);
+                const matchesSearch = item.name.toLowerCase().includes(search) || item.ruName.toLowerCase().includes(search);
                 const matchesCat = (currentCategory === 'all') || (item.cat === currentCategory);
                 return matchesSearch && matchesCat;
             });
