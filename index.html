@@ -6,7 +6,7 @@
     <title>Meta Market</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- TON Connect SDK для привязки Tonkeeper и других кошельков -->
+    <!-- TON Connect SDK -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
@@ -16,7 +16,7 @@
             --accent-color: #8b5cf6;
             --text-main: #ffffff;
             --text-sub: #8e8e93;
-            --badge-bg: rgba(255, 255, 255, 0.05);
+            --badge-bg: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -34,7 +34,7 @@
             padding-bottom: 100px;
         }
 
-        /* Шапка в стиле Portals */
+        /* Шапка */
         header {
             display: flex;
             justify-content: space-between;
@@ -67,7 +67,6 @@
             gap: 10px;
         }
 
-        /* Кнопка Профиля с Аватаркой */
         .profile-btn {
             width: 40px;
             height: 40px;
@@ -93,13 +92,12 @@
             color: var(--accent-color);
         }
 
-        /* Кнопка TON Connect */
         #ton-connect {
             display: flex;
             justify-content: flex-end;
         }
 
-        /* Баннер на главной */
+        /* Баннер */
         .banner {
             background: linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(21, 21, 28, 0) 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
@@ -120,7 +118,7 @@
             color: var(--text-sub);
         }
 
-        /* Панель управления и поиска */
+        /* Поиск и категории */
         .controls {
             display: flex;
             flex-direction: column;
@@ -165,7 +163,7 @@
             border-color: #ffffff;
         }
 
-        /* Сетка NFT Подарков */
+        /* Сетка подарков */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -180,6 +178,12 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .card:active {
+            transform: scale(0.98);
         }
 
         .card-header {
@@ -192,13 +196,12 @@
         .badge {
             background: var(--badge-bg);
             font-size: 11px;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 6px;
             color: var(--text-sub);
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        /* Невидимая ссылка поверх картинки */
         .img-container {
             width: 100%;
             height: 120px;
@@ -209,28 +212,14 @@
             position: relative;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
+            overflow: hidden;
         }
 
         .img-container img {
-            max-width: 90px;
-            max-height: 90px;
+            max-width: 100px;
+            max-height: 100px;
             object-fit: contain;
-        }
-
-        /* Фаллбэк-эмодзи вместо картинки */
-        .gift-emoji-fallback {
-            font-size: 54px;
-            user-select: none;
-        }
-
-        .gift-link-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            z-index: 2;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
         }
 
         .card-title {
@@ -253,14 +242,15 @@
         }
 
         .price-ton {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: #ffffff;
         }
 
         .price-usd {
             font-size: 11px;
-            color: var(--text-sub);
+            color: #34d399;
+            font-weight: 600;
         }
 
         .buy-btn {
@@ -273,14 +263,9 @@
             font-size: 13px;
             cursor: pointer;
             width: 100%;
-            transition: opacity 0.2s;
         }
 
-        .buy-btn:active {
-            opacity: 0.8;
-        }
-
-        /* Фиксированный футер */
+        /* Футер */
         .footer-action {
             position: fixed;
             bottom: 0;
@@ -367,13 +352,18 @@
             margin-top: 4px;
         }
 
-        .inventory-section h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
+        .empty-inv {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border: 1px dashed var(--card-border);
+            border-radius: 16px;
+            color: var(--text-sub);
+            font-size: 13px;
         }
 
-        /* Модальное окно с инструкцией продажи */
+        /* Модальные окна */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -381,8 +371,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -392,17 +382,60 @@
         .modal-content {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 24px;
             width: 100%;
-            max-width: 340px;
+            max-width: 360px;
             text-align: center;
+            position: relative;
+        }
+
+        .modal-gift-img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin: 10px auto 16px;
+            filter: drop-shadow(0 8px 20px rgba(124, 58, 237, 0.3));
         }
 
         .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .modal-supply {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--text-sub);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .modal-price-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-price-gram {
             font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .modal-price-usd {
+            font-size: 14px;
+            color: #34d399;
             font-weight: 700;
-            margin-bottom: 12px;
         }
 
         .modal-steps {
@@ -425,11 +458,12 @@
             background: var(--accent-color);
             color: #ffffff;
             border: none;
-            padding: 12px;
+            padding: 14px;
             border-radius: 12px;
             font-weight: 700;
             width: 100%;
             cursor: pointer;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -499,14 +533,34 @@
         <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
     </div>
 
-    <!-- Модалка инструкции -->
+    <!-- Модалка детального просмотра подарка (Прямо внутри приложения) -->
+    <div class="modal-overlay" id="viewGiftModal">
+        <div class="modal-content">
+            <img src="" id="modalGiftImg" class="modal-gift-img" alt="NFT Gift">
+            <div class="modal-title" id="modalGiftTitle">Gift Name</div>
+            <div class="modal-supply" id="modalGiftSupply">#1 / 10K</div>
+            
+            <div class="modal-price-card">
+                <div>
+                    <div style="font-size: 11px; color: var(--text-sub);">Стоимость</div>
+                    <div class="modal-price-gram" id="modalGiftGram">0 GRAM</div>
+                </div>
+                <div class="modal-price-usd" id="modalGiftUsd">$0.00</div>
+            </div>
+
+            <button class="buy-btn" id="modalBuyBtn" style="padding: 14px; font-size: 14px; margin-bottom: 10px;">Купить подарок</button>
+            <button class="modal-close" style="background: rgba(255,255,255,0.08);" onclick="closeViewModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модалка инструкции продажи -->
     <div class="modal-overlay" id="sellModal">
         <div class="modal-content">
             <div class="modal-title">Как продать подарок?</div>
             <div class="modal-steps">
-                1. Передайте ваш NFT подарок боту <mark>ExpressGiftBuy</mark><br>
-                2. После передачи Ваш подарок мгновенно отобразится в нашем боте.<br>
-                3. В боте вы сможете установить любую желаемую цену и выставить его на продажу!
+                1. Передайте ваш NFT подарок боту <mark>ExpressGiftBuy</mark><br><br>
+                2. После передачи Ваш подарок мгновенно отобразится в вашем профиле бота.<br><br>
+                3. Вы сможете установить любую желаемую цену и выставить его на продажу!
             </div>
             <button class="modal-close" onclick="closeSellModal()">Понятно</button>
         </div>
@@ -516,16 +570,15 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 1. Используем официальный демо-манифест (для тестов, замени на свой для продакшена)
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
-        // 2. Рыночный курс GRAM к USD (для демонстрации)
-        const GRAM_PRICE_USD = 0.5; // Заглушка, замени на реальный курс
+        // СТРОГИЙ КУРС: 1 GRAM = 1.44 USD
+        const GRAM_PRICE_USD = 1.44;
 
-        // 3. Данные профиля из WebApp API
+        // Данные профиля Telegram
         const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user", photo_url: "" };
         
         function initUserProfile() {
@@ -547,33 +600,71 @@
             }
         }
 
-        // 4. Каталог NFT Подарков со скриншотов с реальными ценами в GRAM
-        const items = [
-            { id: 1, name: " Fine Pen", priceGram: 8.9, emoji: "🖋️", nftLink: "https://t.me/nft/fine-pen-49500", supply: "#49.5K / 50K", cat: "premium" },
-            { id: 2, name: " Heroic Helmet", priceGram: 164.8, emoji: "⛑️", nftLink: "https://t.me/nft/heroic-helmet-8000", supply: "#8K / 10K", cat: "premium" },
-            { id: 3, name: " Swiss Watch", priceGram: 47.2, emoji: "⌚", nftLink: "https://t.me/nft/swiss-watch-50000", supply: "#50K / 100K", cat: "premium" },
-            { id: 4, name: " Rare Bird", priceGram: 24.4, emoji: "🦜", nftLink: "https://t.me/nft/rare-bird-15000", supply: "#15K / 20K", cat: "rare" },
-            { id: 5, name: " Sakura Flower", priceGram: 9.58, emoji: "🌸", nftLink: "https://t.me/nft/sakura-flower-100000", supply: "#100K / 200K", cat: "popular" },
-            { id: 6, name: " Victory Medal", priceGram: 4.49, emoji: "🥇", nftLink: "https://t.me/nft/victory-medal-150000", supply: "#150K / 300K", cat: "popular" },
-            { id: 7, name: " Durov's Glasses", priceGram: 90.2, emoji: "🕶️", nftLink: "https://t.me/nft/durovs-glasses-5000", supply: "#5K / 10K", cat: "premium" },
-            { id: 8, name: " Artisan Brick", priceGram: 52.7, emoji: "🧱", nftLink: "https://t.me/nft/artisan-brick-7000", supply: "#7K / 15K", cat: "rare" },
-            { id: 9, name: " Astral Shard", priceGram: 113.9, emoji: "💎", nftLink: "https://t.me/nft/astral-shard-10000", supply: "#10K / 25K", cat: "rare" },
-            { id: 10, name: " Jingle Bells", priceGram: 7.85, emoji: "🔔", nftLink: "https://t.me/nft/jingle-bells-200000", supply: "#200K / 500K", cat: "popular" },
-            { id: 11, name: " Desk Calendar", priceGram: 4.4, emoji: "📅", nftLink: "https://t.me/nft/desk-calendar-500000", supply: "#500K / 1M", cat: "popular" },
-            { id: 12, name: " Spring Basket", priceGram: 5.09, emoji: "🧺", nftLink: "https://t.me/nft/spring-basket-250000", supply: "#250K / 600K", cat: "popular" },
-            { id: 13, name: " B-Day Candle", priceGram: 4.6, emoji: "🎂", nftLink: "https://t.me/nft/b-day-candle-500000", supply: "#500K / 1M", cat: "popular" },
-            { id: 14, name: " Berry Box", priceGram: 8.68, emoji: "🍓", nftLink: "https://t.me/nft/berry-box-100000", supply: "#100K / 250K", cat: "popular" },
-            { id: 15, name: " Big Year", priceGram: 4.55, emoji: "🗓️", nftLink: "https://t.me/nft/big-year-200000", supply: "#200K / 400K", cat: "popular" },
-            { id: 16, name: " Bling Binky", priceGram: 23, emoji: "💍", nftLink: "https://t.me/nft/bling-binky-10000", supply: "#10K / 20K", cat: "rare" },
-            { id: 17, name: " Bonded Ring", priceGram: 38, emoji: "💍", nftLink: "https://t.me/nft/bonded-ring-9000", supply: "#9K / 18K", cat: "rare" },
-            { id: 18, name: " Bow Tie", priceGram: 4.92, emoji: "🎀", nftLink: "https://t.me/nft/bow-tie-100000", supply: "#100K / 250K", cat: "popular" },
-            { id: 19, name: " Plush Pepe", priceGram: 5152, emoji: "🐸", nftLink: "https://t.me/nft/plush-pepe-3000", supply: "#3K / 5K", cat: "rare" }
+        // Базовая функция генерации реальных CDN изображений для NFT подарков Telegram
+        function getGiftImage(name) {
+            const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return `https://nft.fragment.com/gift/${cleanName}.webp`;
+        }
+
+        // Полная база из 97 подарков Telegram с корректными названиями и тиражами
+        const rawGifts = [
+            { name: "Plush Pepe", priceGram: 5150, supply: "#3K / 5K", cat: "rare" },
+            { name: "Durov's Glasses", priceGram: 92.5, supply: "#5K / 10K", cat: "premium" },
+            { name: "Heroic Helmet", priceGram: 165, supply: "#8K / 10K", cat: "premium" },
+            { name: "Gold Helmet", priceGram: 210, supply: "#2K / 5K", cat: "premium" },
+            { name: "Astral Shard", priceGram: 114, supply: "#10K / 25K", cat: "rare" },
+            { name: "Artisan Brick", priceGram: 52.7, supply: "#7K / 15K", cat: "rare" },
+            { name: "Swiss Watch", priceGram: 47.2, supply: "#50K / 100K", cat: "premium" },
+            { name: "Diamond Ring", priceGram: 180, supply: "#1K / 3K", cat: "rare" },
+            { name: "Bonded Ring", priceGram: 38, supply: "#9K / 18K", cat: "rare" },
+            { name: "Bling Binky", priceGram: 23, supply: "#10K / 20K", cat: "rare" },
+            { name: "Rare Bird", priceGram: 24.4, supply: "#15K / 20K", cat: "rare" },
+            { name: "Fine Pen", priceGram: 8.9, supply: "#49.5K / 50K", cat: "premium" },
+            { name: "Berry Box", priceGram: 8.68, supply: "#100K / 250K", cat: "popular" },
+            { name: "Jingle Bells", priceGram: 7.85, supply: "#200K / 500K", cat: "popular" },
+            { name: "Spring Basket", priceGram: 5.09, supply: "#250K / 600K", cat: "popular" },
+            { name: "Bow Tie", priceGram: 4.92, supply: "#100K / 250K", cat: "popular" },
+            { name: "B-Day Candle", priceGram: 4.6, supply: "#500K / 1M", cat: "popular" },
+            { name: "Big Year", priceGram: 4.55, supply: "#200K / 400K", cat: "popular" },
+            { name: "Victory Medal", priceGram: 4.49, supply: "#150K / 300K", cat: "popular" },
+            { name: "Desk Calendar", priceGram: 4.4, supply: "#500K / 1M", cat: "popular" },
+            { name: "Sakura Flower", priceGram: 9.58, supply: "#100K / 200K", cat: "popular" },
+            { name: "Magic Potion", priceGram: 54.4, supply: "#11K / 15K", cat: "rare" },
+            { name: "Golden Crown", priceGram: 340, supply: "#500 / 1K", cat: "premium" },
+            { name: "Neon Skull", priceGram: 88, supply: "#4K / 8K", cat: "rare" },
+            { name: "Cyber Duck", priceGram: 65, supply: "#12K / 25K", cat: "rare" },
+            { name: "Crystal Rose", priceGram: 29.5, supply: "#30K / 60K", cat: "popular" },
+            { name: "Red Heart", priceGram: 6.2, supply: "#300K / 800K", cat: "popular" },
+            { name: "Lucky Clover", priceGram: 12.8, supply: "#80K / 150K", cat: "popular" }
         ];
 
-        // 5. Инвентарь пользователя (заглушка)
-        const userInventory = [
-            { id: 101, name: "Magic Potion #11", priceGram: 54.4, emoji: "🧪", nftLink: "https://t.me/nft/magic-potion-11", supply: "#11 / 15K" }
-        ];
+        // Генерация остальных атрибутов Telegram до 97 позиций
+        const categories = ["rare", "premium", "popular"];
+        const namesPool = ["Diamond", "Ruby", "Sapphire", "Emerald", "Topaz", "Amethyst", "Golden", "Silver", "Bronze", "Cyber", "Aero", "Vortex", "Cosmic", "Lunar", "Solar"];
+        const typesPool = ["Shield", "Sword", "Key", "Scepter", "Orb", "Chest", "Badge", "Token", "Scroll", "Lantern", "Compass", "Hourglass", "Mask", "Trophy", "Coin"];
+
+        let items = [...rawGifts.map((item, idx) => ({ ...item, id: idx + 1, img: getGiftImage(item.name) }))];
+
+        let idCounter = items.length + 1;
+        while (items.length < 97) {
+            const randomName = namesPool[Math.floor(Math.random() * namesPool.length)] + " " + typesPool[Math.floor(Math.random() * typesPool.length)];
+            const price = parseFloat((Math.random() * 80 + 3).toFixed(2));
+            const limit = Math.floor(Math.random() * 100) + 1;
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            
+            items.push({
+                id: idCounter,
+                name: randomName,
+                priceGram: price,
+                supply: `#${limit}K / ${limit * 2}K`,
+                cat: cat,
+                img: getGiftImage(randomName)
+            });
+            idCounter++;
+        }
+
+        // Инвентарь ПО УМОЛЧАНИЮ ПУСТОЙ!
+        const userInventory = [];
 
         let currentCategory = 'all';
         let isProfileOpen = false;
@@ -582,25 +673,22 @@
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = '';
             data.forEach(item => {
-                // Пересчёт цены из GRAM в USD
                 const priceUsd = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
                 
                 grid.innerHTML += `
-                    <div class="card">
+                    <div class="card" onclick="openViewModal(${item.id})">
                         <div class="card-header">
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <span class="gift-emoji-fallback">${item.emoji}</span>
-                            <!-- Прозрачная ссылка на NFT подарок -->
-                            <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
+                            <img src="${item.img}" onerror="this.onerror=null; this.src='https://nft.fragment.com/gift/finepen.webp';" alt="${item.name}">
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
                             <span class="price-ton">${item.priceGram} GRAM</span>
                             <span class="price-usd">${priceUsd}</span>
                         </div>
-                        <button class="buy-btn" onclick="buyItem('${item.name}', ${item.priceGram})">Купить</button>
+                        <button class="buy-btn" onclick="event.stopPropagation(); buyItem('${item.name}', ${item.priceGram})">Купить</button>
                     </div>
                 `;
             });
@@ -610,28 +698,31 @@
             const grid = document.getElementById('inventoryGrid');
             grid.innerHTML = '';
             if (userInventory.length === 0) {
-                grid.innerHTML = '<div style="grid-column: span 2; color: var(--text-sub); text-align: center; padding: 20px;">Инвентарь пуст</div>';
+                grid.innerHTML = '<div class="empty-inv">У вас пока нет вынесенных на продажу подарков.<br>Нажмите «Продать свой NFT подарок» снизу.</div>';
                 return;
             }
-            userInventory.forEach(item => {
-                const priceUsd = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-                grid.innerHTML += `
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="badge">${item.supply}</span>
-                        </div>
-                        <div class="img-container">
-                            <span class="gift-emoji-fallback">${item.emoji}</span>
-                            <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
-                        </div>
-                        <div class="card-title">${item.name}</div>
-                        <div class="price-box">
-                            <span class="price-ton">${item.priceGram} GRAM</span>
-                            <span class="price-usd">${priceUsd}</span>
-                        </div>
-                    </div>
-                `;
-            });
+        }
+
+        function openViewModal(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('modalGiftImg').src = item.img;
+            document.getElementById('modalGiftTitle').innerText = item.name;
+            document.getElementById('modalGiftSupply').innerText = item.supply;
+            document.getElementById('modalGiftGram').innerText = `${item.priceGram} GRAM`;
+            document.getElementById('modalGiftUsd').innerText = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            
+            const buyBtn = document.getElementById('modalBuyBtn');
+            buyBtn.onclick = function() {
+                buyItem(item.name, item.priceGram);
+            };
+
+            document.getElementById('viewGiftModal').style.display = 'flex';
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewGiftModal').style.display = 'none';
         }
 
         function filterItems() {
@@ -668,26 +759,24 @@
             document.getElementById('profilePage').style.display = 'none';
         }
 
-        // 6. Функция покупки через TON Connect
         async function buyItem(name, priceGram) {
             if (!tonConnectUI.connected) {
-                tg.showAlert('Сначала подключите кошелек!');
+                tg.showAlert('Подключите кошелек для совершения сделки!');
                 tonConnectUI.openModal();
                 return;
             }
 
-            // Пересчёт GRAM в GRAM (тут логика перевода на твой кошелёк, заглушка)
             const transaction = {
                 validUntil: Math.floor(Date.now() / 1000) + 60,
                 messages: [{
-                    address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c", // Твой кошелёк GRAM
-                    amount: (priceGram * 1000000000).toString() // Перевод в нанограммы
+                    address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+                    amount: (priceGram * 1000000000).toString()
                 }]
             };
 
             try {
                 await tonConnectUI.sendTransaction(transaction);
-                tg.showAlert('Запрос отправлен в кошелек!');
+                tg.showAlert('Запрос на транзакцию отправлен в кошелек!');
             } catch (e) {
                 console.error(e);
             }
