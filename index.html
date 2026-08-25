@@ -7,12 +7,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #0f0f12);
-            --card-bg: var(--tg-theme-secondary-bg-color, #1a1a20);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #8e8e93);
-            --button-color: var(--tg-theme-button-color, #2ab574);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
+            --bg-color: #0d0914;
+            --card-bg: #181225;
+            --accent-purple: #8b5cf6;
+            --text-color: #ffffff;
+            --hint-color: #a78bfa;
+            --button-color: #7c3aed;
+            --button-text: #ffffff;
         }
 
         * {
@@ -32,25 +33,22 @@
 
         header {
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .logo {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
             letter-spacing: 1px;
-            background: linear-gradient(135deg, #2ab574, #0088cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
         }
 
         .sub-logo {
             font-size: 12px;
             color: var(--hint-color);
-            margin-top: 2px;
+            margin-top: 4px;
         }
 
-        /* Поиск и Фильтры */
         .controls {
             margin-bottom: 16px;
             display: flex;
@@ -60,9 +58,9 @@
 
         .search-box {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
             background: var(--card-bg);
             color: var(--text-color);
             font-size: 14px;
@@ -82,9 +80,9 @@
         }
 
         .cat-btn {
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
-            border: none;
+            border: 1px solid rgba(139, 92, 246, 0.2);
             background: var(--card-bg);
             color: var(--hint-color);
             font-size: 13px;
@@ -95,9 +93,9 @@
         .cat-btn.active {
             background: var(--button-color);
             color: var(--button-text);
+            border-color: var(--button-color);
         }
 
-        /* Сетка товаров */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -111,40 +109,43 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(139, 92, 246, 0.15);
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .badge {
             position: absolute;
             top: 8px;
             left: 8px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(124, 58, 237, 0.3);
+            border: 1px solid rgba(139, 92, 246, 0.4);
             font-size: 10px;
             padding: 3px 6px;
             border-radius: 6px;
-            color: var(--hint-color);
+            color: #ddd6fe;
         }
 
         .img-container {
             width: 100%;
-            height: 100px;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
-        .img-emoji {
-            font-size: 56px;
+        .img-container img {
+            max-width: 90px;
+            max-height: 90px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
         .card-title {
             font-size: 14px;
-            font-weight: 600;
-            margin: 8px 0 4px;
+            font-weight: 700;
+            margin: 10px 0 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -152,93 +153,145 @@
 
         .price-box {
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
+            flex-direction: column;
             margin-bottom: 10px;
         }
 
-        .price-uah {
-            font-size: 14px;
-            font-weight: 700;
-            color: #2ab574;
+        .price-ton {
+            font-size: 15px;
+            font-weight: 800;
+            color: #a78bfa;
         }
 
-        .price-crypto {
+        .price-usd {
             font-size: 11px;
-            color: var(--hint-color);
+            color: #8b5cf6;
         }
 
         .buy-btn {
             background: var(--button-color);
             color: var(--button-text);
             border: none;
-            padding: 9px;
+            padding: 10px;
             border-radius: 10px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 13px;
             cursor: pointer;
             width: 100%;
+            transition: 0.2s;
         }
 
-        /* Кнопка снизу для Telegram */
+        .buy-btn:active {
+            transform: scale(0.97);
+        }
+
         .footer-action {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--bg-color);
+            background: rgba(13, 9, 20, 0.95);
+            backdrop-filter: blur(10px);
             padding: 12px 16px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
         }
 
         .sell-btn {
             width: 100%;
-            background: #0088cc;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
             color: #fff;
             border: none;
-            padding: 12px;
+            padding: 13px;
             border-radius: 12px;
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">❖ META MARKET ❖</div>
-        <div class="sub-logo">NFT Gifts & Collectibles</div>
+        <div class="logo">♾ META MARKET</div>
+        <div class="sub-logo">Telegram NFT Gifts & Collectibles</div>
     </header>
 
     <div class="controls">
-        <input type="text" id="searchInput" class="search-box" placeholder="Поиск подарка..." oninput="filterItems()">
+        <input type="text" id="searchInput" class="search-box" placeholder="Поиск NFT Подарка..." oninput="filterItems()">
         <div class="categories">
-            <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
-            <button class="cat-btn" onclick="setCategory('rare', this)">🔥 Редкие</button>
-            <button class="cat-btn" onclick="setCategory('food', this)">🍔 Еда</button>
-            <button class="cat-btn" onclick="setCategory('animals', this)">🐵 Животные</button>
+            <button class="cat-btn active" onclick="setCategory('all', this)">Все подарки</button>
+            <button class="cat-btn" onclick="setCategory('pepe', this)">🐸 Pepe</button>
+            <button class="cat-btn" onclick="setCategory('rare', this)">🔥 Топ Раритеты</button>
         </div>
     </div>
 
     <div class="grid" id="itemsGrid"></div>
 
     <div class="footer-action">
-        <button class="sell-btn" onclick="sellGift()">🤝 Продать свой подарок</button>
+        <button class="sell-btn" onclick="sellGift()">🤝 Продать свой NFT подарок</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
+        tg.expand();
 
-        // База подарков в наличии
+        // Настоящие NFT подарки из Telegram
         const items = [
-            { id: 1, name: "IceCream #9424", priceUah: 900, priceTon: 22, emoji: "🍦", cat: "food", rare: false },
-            { id: 2, name: "Red Chimpanzee", priceUah: 1500, priceTon: 37, emoji: "🐵", cat: "animals", rare: true },
-            { id: 3, name: "Juicy Watermelon", priceUah: 800, priceTon: 20, emoji: "🍉", cat: "food", rare: false },
-            { id: 4, name: "Doberman Dog", priceUah: 1200, priceTon: 30, emoji: "🐕", cat: "animals", rare: true },
-            { id: 5, name: "Magic Unicorn", priceUah: 1800, priceTon: 45, emoji: "🦄", cat: "rare", rare: true },
-            { id: 6, name: "Jester Hat", priceUah: 750, priceTon: 18, emoji: "🤡", cat: "rare", rare: false }
+            { 
+                id: 1, 
+                name: "Plush Pepe #142", 
+                priceTon: "450 TON", 
+                priceUsd: "~$3,150", 
+                img: "https://nft.fragment.com/gift/plush-pepe.webp", 
+                supply: "1 of 500", 
+                cat: "pepe" 
+            },
+            { 
+                id: 2, 
+                name: "Frog Pepe #892", 
+                priceTon: "120 TON", 
+                priceUsd: "~$840", 
+                img: "https://nft.fragment.com/gift/frog-pepe.webp", 
+                supply: "1 of 2,500", 
+                cat: "pepe" 
+            },
+            { 
+                id: 3, 
+                name: "Green Star #504", 
+                priceTon: "85 TON", 
+                priceUsd: "~$595", 
+                img: "https://nft.fragment.com/gift/green-star.webp", 
+                supply: "1 of 5,000", 
+                cat: "rare" 
+            },
+            { 
+                id: 4, 
+                name: "Santa Hat #12", 
+                priceTon: "310 TON", 
+                priceUsd: "~$2,170", 
+                img: "https://nft.fragment.com/gift/santa-hat.webp", 
+                supply: "1 of 1,000", 
+                cat: "rare" 
+            },
+            { 
+                id: 5, 
+                name: "Diamond Ring #340", 
+                priceTon: "65 TON", 
+                priceUsd: "~$455", 
+                img: "https://nft.fragment.com/gift/diamond-ring.webp", 
+                supply: "1 of 10,000", 
+                cat: "rare" 
+            },
+            { 
+                id: 6, 
+                name: "Golden Skull #99", 
+                priceTon: "500 TON", 
+                priceUsd: "~$3,500", 
+                img: "https://nft.fragment.com/gift/golden-skull.webp", 
+                supply: "1 of 250", 
+                cat: "rare" 
+            }
         ];
 
         let currentCategory = 'all';
@@ -249,16 +302,16 @@
             data.forEach(item => {
                 grid.innerHTML += `
                     <div class="card">
-                        <span class="badge">1 of ${item.cat === 'rare' ? '10k' : '50k'}</span>
+                        <span class="badge">${item.supply}</span>
                         <div class="img-container">
-                            <span class="img-emoji">${item.emoji}</span>
+                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
-                            <span class="price-uah">${item.priceUah} UAH</span>
-                            <span class="price-crypto">~${item.priceTon} TON</span>
+                            <span class="price-ton">${item.priceTon}</span>
+                            <span class="price-usd">${item.priceUsd}</span>
                         </div>
-                        <button class="buy-btn" onclick="buyItem('${item.name}', ${item.priceUah})">Купить</button>
+                        <button class="buy-btn" onclick="buyItem('${item.name}', '${item.priceTon}')">Купить</button>
                     </div>
                 `;
             });
@@ -268,9 +321,7 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filtered = items.filter(item => {
                 const matchesSearch = item.name.toLowerCase().includes(search);
-                const matchesCat = (currentCategory === 'all') || 
-                                   (currentCategory === 'rare' && item.rare) || 
-                                   (item.cat === currentCategory);
+                const matchesCat = (currentCategory === 'all') || (item.cat === currentCategory);
                 return matchesSearch && matchesCat;
             });
             renderGrid(filtered);
@@ -284,7 +335,6 @@
         }
 
         function buyItem(name, price) {
-            // Отправка данных боту при нажатии "Купить"
             tg.sendData(JSON.stringify({
                 action: "buy",
                 item: name,
@@ -293,13 +343,11 @@
         }
 
         function sellGift() {
-            // Отправка данных боту для заявки на продажу
             tg.sendData(JSON.stringify({
                 action: "sell"
             }));
         }
 
-        // Первичный рендер
         renderGrid(items);
     </script>
 </body>
