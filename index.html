@@ -43,6 +43,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
         }
 
         .brand-logo {
@@ -189,7 +190,6 @@
             font-weight: 500;
         }
 
-        /* Невидимая ссылка поверх картинки */
         .img-container {
             width: 100%;
             height: 120px;
@@ -198,12 +198,19 @@
             justify-content: center;
             margin: 4px 0 12px;
             position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
         }
 
         .img-container img {
-            max-width: 100px;
-            max-height: 100px;
+            max-width: 90px;
+            max-height: 90px;
             object-fit: contain;
+        }
+
+        .gift-emoji-fallback {
+            font-size: 54px;
+            user-select: none;
         }
 
         .gift-link-overlay {
@@ -282,7 +289,6 @@
             cursor: pointer;
         }
 
-        /* Экран профиля */
         .profile-screen {
             display: none;
             flex-direction: column;
@@ -344,13 +350,6 @@
             margin-top: 4px;
         }
 
-        .inventory-section h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        /* Модалка продажи */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -413,7 +412,7 @@
 <body>
 
     <header>
-        <div class="brand" onclick="showMarket()" style="cursor: pointer;">
+        <div class="brand" onclick="showMarket()">
             <div class="brand-logo">♾</div>
             <div class="brand-title">Meta</div>
         </div>
@@ -425,7 +424,6 @@
         </div>
     </header>
 
-    <!-- Главная страница Маркета -->
     <div id="marketPage">
         <div class="banner">
             <h2>Маркетплейс NFT Подарков</h2>
@@ -445,7 +443,6 @@
         <div class="grid" id="itemsGrid"></div>
     </div>
 
-    <!-- Страница Профиля -->
     <div id="profilePage" class="profile-screen">
         <div class="profile-card">
             <div class="user-avatar" id="profileAvatarBig">
@@ -467,7 +464,7 @@
         </div>
 
         <div class="inventory-section">
-            <h3>Инвентарь подарков</h3>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Инвентарь подарков</h3>
             <div class="grid" id="inventoryGrid"></div>
         </div>
     </div>
@@ -476,7 +473,6 @@
         <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
     </div>
 
-    <!-- Модалка продажи -->
     <div class="modal-overlay" id="sellModal">
         <div class="modal-content">
             <div class="modal-title">Как продать подарок?</div>
@@ -494,13 +490,30 @@
         tg.expand();
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
+            manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
-        // Данные профиля из WebApp API
-        const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user", photo_url: "" };
-        
+        const TON_PRICE_USD = 3.2; 
+
+        // Актуальные цены с Fragment
+        const items = [
+            { id: 1, name: "Plush Pepe #142", priceTon: 5152, emoji: "🧸", img: "", nftLink: "https://t.me/nft/plush-pepe-142", supply: "#142 / 500", cat: "pepe" },
+            { id: 2, name: "Frog Pepe #892", priceTon: 1250, emoji: "🐸", img: "", nftLink: "https://t.me/nft/frog-pepe-892", supply: "#892 / 2.5K", cat: "pepe" },
+            { id: 3, name: "Green Star #504", priceTon: 420, emoji: "⭐", img: "", nftLink: "https://t.me/nft/green-star-504", supply: "#504 / 5K", cat: "rare" },
+            { id: 4, name: "Santa Hat #12", priceTon: 1850, emoji: "🎅", img: "", nftLink: "https://t.me/nft/santa-hat-12", supply: "#12 / 1K", cat: "rare" },
+            { id: 5, name: "Diamond Ring #340", priceTon: 150, emoji: "💍", img: "", nftLink: "https://t.me/nft/diamond-ring-340", supply: "#340 / 10K", cat: "popular" },
+            { id: 6, name: "Golden Skull #99", priceTon: 3400, emoji: "💀", img: "", nftLink: "https://t.me/nft/golden-skull-99", supply: "#99 / 250", cat: "rare" }
+        ];
+
+        const userInventory = [
+            { id: 101, name: "Magic Potion #11", priceTon: 95, emoji: "🧪", img: "", nftLink: "https://t.me/nft/magic-potion-11", supply: "#11 / 15K" }
+        ];
+
+        const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user" };
+        let currentCategory = 'all';
+        let isProfileOpen = false;
+
         function initUserProfile() {
             const nameEl = document.getElementById('userName');
             const handleEl = document.getElementById('userHandle');
@@ -511,8 +524,8 @@
             handleEl.innerText = userData.username ? "@" + userData.username : "Без юзернейма";
 
             if (userData.photo_url) {
-                avatarBtn.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
-                bigAvatar.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
+                avatarBtn.innerHTML = `<img src="${userData.photo_url}">`;
+                bigAvatar.innerHTML = `<img src="${userData.photo_url}">`;
             } else {
                 const letter = (userData.first_name || "U")[0].toUpperCase();
                 document.getElementById('avatarFallback').innerText = letter;
@@ -520,45 +533,26 @@
             }
         }
 
-        // Каталог NFT Подарков Telegram с встроенными невидимыми NFT-ссылками
-        const items = [
-            { id: 1, name: "Plush Pepe #142", priceTon: 450, priceUsd: 3150, img: "https://nft.fragment.com/gift/plush-pepe.webp", nftLink: "https://t.me/nft/plush-pepe-142", supply: "#142 / 500", cat: "pepe" },
-            { id: 2, name: "Frog Pepe #892", priceTon: 120, priceUsd: 840, img: "https://nft.fragment.com/gift/frog-pepe.webp", nftLink: "https://t.me/nft/frog-pepe-892", supply: "#892 / 2.5K", cat: "pepe" },
-            { id: 3, name: "Green Star #504", priceTon: 85, priceUsd: 595, img: "https://nft.fragment.com/gift/green-star.webp", nftLink: "https://t.me/nft/green-star-504", supply: "#504 / 5K", cat: "rare" },
-            { id: 4, name: "Santa Hat #12", priceTon: 310, priceUsd: 2170, img: "https://nft.fragment.com/gift/santa-hat.webp", nftLink: "https://t.me/nft/santa-hat-12", supply: "#12 / 1K", cat: "rare" },
-            { id: 5, name: "Diamond Ring #340", priceTon: 65, priceUsd: 455, img: "https://nft.fragment.com/gift/diamond-ring.webp", nftLink: "https://t.me/nft/diamond-ring-340", supply: "#340 / 10K", cat: "popular" },
-            { id: 6, name: "Golden Skull #99", priceTon: 500, priceUsd: 3500, img: "https://nft.fragment.com/gift/golden-skull.webp", nftLink: "https://t.me/nft/golden-skull-99", supply: "#99 / 250", cat: "rare" },
-            { id: 7, name: "Bond #007", priceTon: 890, priceUsd: 6230, img: "https://nft.fragment.com/gift/bond.webp", nftLink: "https://t.me/nft/bond-007", supply: "#7 / 100", cat: "rare" },
-            { id: 8, name: "Cyber Helmet #412", priceTon: 210, priceUsd: 1470, img: "https://nft.fragment.com/gift/cyber-helmet.webp", nftLink: "https://t.me/nft/cyber-helmet-412", supply: "#412 / 1.5K", cat: "popular" }
-        ];
-
-        // Инвентарь пользователя для демонстрации
-        const userInventory = [
-            { id: 101, name: "Magic Potion #11", priceTon: 45, priceUsd: 315, img: "https://nft.fragment.com/gift/magic-potion.webp", nftLink: "https://t.me/nft/magic-potion-11", supply: "#11 / 15K" },
-            { id: 102, name: "Gold Watch #88", priceTon: 180, priceUsd: 1260, img: "https://nft.fragment.com/gift/gold-watch.webp", nftLink: "https://t.me/nft/gold-watch-88", supply: "#88 / 3K" }
-        ];
-
-        let currentCategory = 'all';
-        let isProfileOpen = false;
-
         function renderGrid(data) {
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = '';
             data.forEach(item => {
+                const priceUsd = (item.priceTon * TON_PRICE_USD).toLocaleString('en-US', { maximumFractionDigits: 0 });
+                const imgContent = `<span class="gift-emoji-fallback">${item.emoji}</span>`;
+
                 grid.innerHTML += `
                     <div class="card">
                         <div class="card-header">
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
-                            <!-- Прозрачная ссылка на NFT подарок -->
+                            ${imgContent}
                             <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
-                            <span class="price-ton">${item.priceTon} TON</span>
-                            <span class="price-usd">$${item.priceUsd}</span>
+                            <span class="price-ton">${item.priceTon.toLocaleString()} TON</span>
+                            <span class="price-usd">$${priceUsd}</span>
                         </div>
                         <button class="buy-btn" onclick="buyItem('${item.name}', ${item.priceTon})">Купить</button>
                     </div>
@@ -569,24 +563,21 @@
         function renderInventory() {
             const grid = document.getElementById('inventoryGrid');
             grid.innerHTML = '';
-            if (userInventory.length === 0) {
-                grid.innerHTML = '<div style="grid-column: span 2; color: var(--text-sub); text-align: center; padding: 20px;">Инвентарь пуст</div>';
-                return;
-            }
             userInventory.forEach(item => {
+                const priceUsd = (item.priceTon * TON_PRICE_USD).toLocaleString('en-US', { maximumFractionDigits: 0 });
                 grid.innerHTML += `
                     <div class="card">
                         <div class="card-header">
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
+                            <span class="gift-emoji-fallback">${item.emoji}</span>
                             <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
-                            <span class="price-ton">${item.priceTon} TON</span>
-                            <span class="price-usd">$${item.priceUsd}</span>
+                            <span class="price-ton">${item.priceTon.toLocaleString()} TON</span>
+                            <span class="price-usd">$${priceUsd}</span>
                         </div>
                     </div>
                 `;
@@ -629,7 +620,7 @@
 
         async function buyItem(name, priceTon) {
             if (!tonConnectUI.connected) {
-                tg.showAlert('Сначала подключите кошелек!');
+                tg.showAlert('Сначала подключите кошелек через TON Connect!');
                 tonConnectUI.openModal();
                 return;
             }
@@ -644,7 +635,7 @@
 
             try {
                 await tonConnectUI.sendTransaction(transaction);
-                tg.showAlert('Запрос отправлен!');
+                tg.showAlert('Транзакция отправлена!');
             } catch (e) {
                 console.error(e);
             }
