@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Meta Market</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- TON Connect SDK для привязки Tonkeeper и других кошельков -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
@@ -34,7 +32,6 @@
             padding-bottom: 100px;
         }
 
-        /* Шапка в стиле Portals */
         header {
             display: flex;
             justify-content: space-between;
@@ -63,16 +60,13 @@
         .brand-title {
             font-size: 18px;
             font-weight: 700;
-            letter-spacing: -0.5px;
         }
 
-        /* Кнопка TON Connect */
         #ton-connect {
             display: flex;
             justify-content: flex-end;
         }
 
-        /* Баннер на главной */
         .banner {
             background: linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(21, 21, 28, 0) 100%);
             border: 1px solid rgba(139, 92, 246, 0.2);
@@ -93,7 +87,6 @@
             color: var(--text-sub);
         }
 
-        /* Панель управления и поиска */
         .controls {
             display: flex;
             flex-direction: column;
@@ -138,7 +131,6 @@
             border-color: #ffffff;
         }
 
-        /* Сетка NFT Подарков 1 в 1 как Portals */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -209,9 +201,6 @@
             font-size: 14px;
             font-weight: 700;
             color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .price-usd {
@@ -229,20 +218,14 @@
             font-size: 13px;
             cursor: pointer;
             width: 100%;
-            transition: opacity 0.2s;
         }
 
-        .buy-btn:active {
-            opacity: 0.8;
-        }
-
-        /* Фиксированный футер */
         .footer-action {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(13, 13, 17, 0.9);
+            background: rgba(13, 13, 17, 0.95);
             backdrop-filter: blur(12px);
             padding: 12px 16px;
             border-top: 1px solid var(--card-border);
@@ -259,6 +242,65 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        /* Модальное окно с инструкцией продажи */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .modal-steps {
+            text-align: left;
+            font-size: 13px;
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-steps mark {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -268,7 +310,6 @@
             <div class="brand-logo">♾</div>
             <div class="brand-title">Meta</div>
         </div>
-        <!-- Сюда встраивается кнопка Подключить Tonkeeper -->
         <div id="ton-connect"></div>
     </header>
 
@@ -283,81 +324,52 @@
             <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
             <button class="cat-btn" onclick="setCategory('pepe', this)">Pepe</button>
             <button class="cat-btn" onclick="setCategory('rare', this)">Редкие</button>
+            <button class="cat-btn" onclick="setCategory('popular', this)">Популярные</button>
         </div>
     </div>
 
     <div class="grid" id="itemsGrid"></div>
 
     <div class="footer-action">
-        <button class="sell-btn" onclick="sellGift()">Продать свой NFT подарок</button>
+        <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
+    </div>
+
+    <!-- Модалка инструкции -->
+    <div class="modal-overlay" id="sellModal">
+        <div class="modal-content">
+            <div class="modal-title">Как продать подарок?</div>
+            <div class="modal-steps">
+                1. Передайте ваш NFT подарок аккаунту <mark>@ExpressGiftBuy</mark><br>
+                2. После передачи Ваш подарок мгновенно отобразится в нашем боте.<br>
+                3. В боте вы сможете установить любую желаемую цену и выставить его на продажу!
+            </div>
+            <button class="modal-close" onclick="closeSellModal()">Понятно</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 1. Инициализация TON Connect (Tonkeeper, MyTonWallet и т.д.)
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json',
             buttonRootId: 'ton-connect'
         });
 
-        // 2. Список актуальных NFT Подарков Telegram
+        // Большой каталог реальных NFT Подарков Telegram (изображения подгружаются с Fragment API)
         const items = [
-            { 
-                id: 1, 
-                name: "Plush Pepe #142", 
-                priceTon: 450, 
-                priceUsd: 3150, 
-                img: "https://nft.fragment.com/gift/plush-pepe.webp", 
-                supply: "#142 / 500", 
-                cat: "pepe" 
-            },
-            { 
-                id: 2, 
-                name: "Frog Pepe #892", 
-                priceTon: 120, 
-                priceUsd: 840, 
-                img: "https://nft.fragment.com/gift/frog-pepe.webp", 
-                supply: "#892 / 2.5K", 
-                cat: "pepe" 
-            },
-            { 
-                id: 3, 
-                name: "Green Star #504", 
-                priceTon: 85, 
-                priceUsd: 595, 
-                img: "https://nft.fragment.com/gift/green-star.webp", 
-                supply: "#504 / 5K", 
-                cat: "rare" 
-            },
-            { 
-                id: 4, 
-                name: "Santa Hat #12", 
-                priceTon: 310, 
-                priceUsd: 2170, 
-                img: "https://nft.fragment.com/gift/santa-hat.webp", 
-                supply: "#12 / 1K", 
-                cat: "rare" 
-            },
-            { 
-                id: 5, 
-                name: "Diamond Ring #340", 
-                priceTon: 65, 
-                priceUsd: 455, 
-                img: "https://nft.fragment.com/gift/diamond-ring.webp", 
-                supply: "#340 / 10K", 
-                cat: "rare" 
-            },
-            { 
-                id: 6, 
-                name: "Golden Skull #99", 
-                priceTon: 500, 
-                priceUsd: 3500, 
-                img: "https://nft.fragment.com/gift/golden-skull.webp", 
-                supply: "#99 / 250", 
-                cat: "rare" 
-            }
+            { id: 1, name: "Plush Pepe #142", priceTon: 450, priceUsd: 3150, img: "https://nft.fragment.com/gift/plush-pepe.webp", supply: "#142 / 500", cat: "pepe" },
+            { id: 2, name: "Frog Pepe #892", priceTon: 120, priceUsd: 840, img: "https://nft.fragment.com/gift/frog-pepe.webp", supply: "#892 / 2.5K", cat: "pepe" },
+            { id: 3, name: "Green Star #504", priceTon: 85, priceUsd: 595, img: "https://nft.fragment.com/gift/green-star.webp", supply: "#504 / 5K", cat: "rare" },
+            { id: 4, name: "Santa Hat #12", priceTon: 310, priceUsd: 2170, img: "https://nft.fragment.com/gift/santa-hat.webp", supply: "#12 / 1K", cat: "rare" },
+            { id: 5, name: "Diamond Ring #340", priceTon: 65, priceUsd: 455, img: "https://nft.fragment.com/gift/diamond-ring.webp", supply: "#340 / 10K", cat: "popular" },
+            { id: 6, name: "Golden Skull #99", priceTon: 500, priceUsd: 3500, img: "https://nft.fragment.com/gift/golden-skull.webp", supply: "#99 / 250", cat: "rare" },
+            { id: 7, name: "Bond #007", priceTon: 890, priceUsd: 6230, img: "https://nft.fragment.com/gift/bond.webp", supply: "#7 / 100", cat: "rare" },
+            { id: 8, name: "Cyber Helmet #412", priceTon: 210, priceUsd: 1470, img: "https://nft.fragment.com/gift/cyber-helmet.webp", supply: "#412 / 1.5K", cat: "popular" },
+            { id: 9, name: "Magic Potion #11", priceTon: 45, priceUsd: 315, img: "https://nft.fragment.com/gift/magic-potion.webp", supply: "#11 / 15K", cat: "popular" },
+            { id: 10, name: "Gold Watch #88", priceTon: 180, priceUsd: 1260, img: "https://nft.fragment.com/gift/gold-watch.webp", supply: "#88 / 3K", cat: "popular" },
+            { id: 11, name: "VR Glasses #65", priceTon: 95, priceUsd: 665, img: "https://nft.fragment.com/gift/vr-glasses.webp", supply: "#65 / 4K", cat: "popular" },
+            { id: 12, name: "Neon Cat #303", priceTon: 340, priceUsd: 2380, img: "https://nft.fragment.com/gift/neon-cat.webp", supply: "#303 / 800", cat: "rare" }
         ];
 
         let currentCategory = 'all';
@@ -372,7 +384,7 @@
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
+                            <img src="${item.img}?t=${Date.now()}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
@@ -402,35 +414,36 @@
             filterItems();
         }
 
-        // Покупка через привязанный кошелек TON
         async function buyItem(name, priceTon) {
             if (!tonConnectUI.connected) {
-                tg.showAlert('Сначала подключите ваш Tonkeeper через кнопку вверху!');
+                tg.showAlert('Сначала подключите кошелек!');
                 tonConnectUI.openModal();
                 return;
             }
 
-            // Транзакция вызова Tonkeeper
             const transaction = {
                 validUntil: Math.floor(Date.now() / 1000) + 60,
-                messages: [
-                    {
-                        address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c", // Твой TON кошелек
-                        amount: (priceTon * 1000000000).toString() // Перевод в нанотоны
-                    }
-                ]
+                messages: [{
+                    address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+                    amount: (priceTon * 1000000000).toString()
+                }]
             };
 
             try {
                 await tonConnectUI.sendTransaction(transaction);
-                tg.showAlert('Запрос отправлен в кошелек!');
+                tg.showAlert('Запрос отправлен!');
             } catch (e) {
                 console.error(e);
             }
         }
 
-        function sellGift() {
-            tg.sendData(JSON.stringify({ action: "sell" }));
+        // Функции модалки продажи
+        function openSellModal() {
+            document.getElementById('sellModal').style.display = 'flex';
+        }
+
+        function closeSellModal() {
+            document.getElementById('sellModal').style.display = 'none';
         }
 
         renderGrid(items);
