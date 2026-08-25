@@ -595,32 +595,128 @@
             }
         }
 
-        // РОВНЫЕ НАЗВАНИЯ ИЗ ТВОЕГО СПИСКА
+        // АКТУАЛЬНЫЙ СПИСОК ПОДАРКОВ И ЦЕН ИЗ БАЗЫ
         const allGiftsList = [
-            { name: "Vintage Lamp", ruName: "Лампочка", priceGram: 18.5, supply: "#12K / 25K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Neon Heart", ruName: "Неоновое сердце", priceGram: 45.0, supply: "#5K / 10K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Astronaut Helmet", ruName: "Шлем космонавта", priceGram: 165.0, supply: "#1K / 3K", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Flying Broom", ruName: "Летающая метла", priceGram: 22.0, supply: "#15K / 30K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Magic Potion", ruName: "Магическое зелье", priceGram: 54.0, supply: "#8K / 15K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Bento Box", ruName: "Бенто-бокс", priceGram: 12.5, supply: "#40K / 80K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Perfume Bottle", ruName: "Флакон духов", priceGram: 38.0, supply: "#9K / 20K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Eternal Rose", ruName: "Роза", priceGram: 29.5, supply: "#30K / 60K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Teddy Bear", ruName: "Мишка", priceGram: 15.0, supply: "#50K / 100K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-            { name: "Lolli Bear", ruName: "Леденец-мишка", priceGram: 9.8, supply: "#80K / 150K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
-            { name: "Santa Hat", ruName: "Колпак Санты", priceGram: 14.5, supply: "#50K / 100K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
-            { name: "Homemade Cake", ruName: "Домашний торт", priceGram: 11.0, supply: "#60K / 120K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Jelly Bunny", ruName: "Желейный кролик", priceGram: 8.2, supply: "#100K / 200K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Spiced Wine", ruName: "Глинтвейн", priceGram: 16.0, supply: "#35K / 70K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Gingerbread Man", ruName: "Имбирный пряник", priceGram: 6.7, supply: "#150K / 300K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
-            { name: "Christmas Tree", ruName: "Новогодняя елка", priceGram: 31.0, supply: "#10K / 30K", cat: "rare", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Jack-o'-Lantern", ruName: "Тыква на Хэллоуин", priceGram: 27.0, supply: "#25K / 50K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Party Sparkler", ruName: "Бенгальский огонь", priceGram: 5.4, supply: "#200K / 500K", cat: "popular", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Snoop Dogg Chain", ruName: "Коллекция Snoop Dogg", priceGram: 850.0, supply: "#100 / 500", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png" },
-            { name: "Papakha", ruName: "Папаха Хабиба", priceGram: 420.0, supply: "#300 / 1K", cat: "premium", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" }
+            { name: "Plush Pepe", priceGram: 5152.0, supply: "#1 / 50", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+            { name: "Heart Locket", priceGram: 1020.0, supply: "#10 / 100", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Durov’s Cap", priceGram: 396.9, supply: "#50 / 200", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
+            { name: "Precious Peach", priceGram: 252.5, supply: "#100 / 500", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Scared Cat", priceGram: 191.3, supply: "#120 / 500", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Heroic Helmet", priceGram: 164.8, supply: "#200 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Mighty Arm", priceGram: 105.0, supply: "#300 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png" },
+            { name: "Nail Bracelet", priceGram: 115.4, supply: "#350 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Astral Shard", priceGram: 113.7, supply: "#400 / 1.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Loot Bag", priceGram: 118.4, supply: "#450 / 1.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Westside Sign", priceGram: 91.6, supply: "#500 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Durov’s Glasses", priceGram: 90.0, supply: "#600 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Mini Oscar", priceGram: 72.6, supply: "#700 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Ion Gem", priceGram: 66.0, supply: "#800 / 2.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Perfume Bottle", priceGram: 62.0, supply: "#900 / 3K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Gem Signet", priceGram: 58.5, supply: "#1K / 3K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Magic Potion", priceGram: 54.4, supply: "#1.2K / 4K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Artisan Brick", priceGram: 52.6, supply: "#1.5K / 5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Low Rider", priceGram: 49.9, supply: "#1.8K / 5K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Swiss Watch", priceGram: 47.1, supply: "#2K / 6K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Sharp Tongue", priceGram: 40.9, supply: "#2.2K / 6K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
+            { name: "Kissed Frog", priceGram: 39.8, supply: "#2.5K / 7K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Neko Helmet", priceGram: 34.9, supply: "#3K / 8K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Toy Bear", priceGram: 34.4, supply: "#3.5K / 9K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+            { name: "Voodoo Doll", priceGram: 34.1, supply: "#4K / 10K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Vintage Cigar", priceGram: 33.9, supply: "#4.5K / 10K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Genie Lamp", priceGram: 33.2, supply: "#5K / 12K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Signet Ring", priceGram: 30.7, supply: "#5.5K / 12K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Diamond Ring", priceGram: 27.8, supply: "#6K / 15K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Eternal Rose", priceGram: 25.2, supply: "#7K / 15K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Rare Bird", priceGram: 24.4, supply: "#8K / 18K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Electric Skull", priceGram: 24.4, supply: "#8.5K / 18K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Khabib’s Papakha", priceGram: 24.0, supply: "#9K / 20K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
+            { name: "Bling Binky", priceGram: 22.9, supply: "#9.5K / 20K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+            { name: "Cupid Charm", priceGram: 21.9, supply: "#10K / 25K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Sky Stilettos", priceGram: 19.4, supply: "#11K / 25K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Trapped Heart", priceGram: 15.3, supply: "#12K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "UFC Strike", priceGram: 14.8, supply: "#13K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
+            { name: "Ionic Dryer", priceGram: 14.9, supply: "#14K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Love Potion", priceGram: 14.0, supply: "#15K / 35K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Snoop Cigar", priceGram: 13.8, supply: "#16K / 35K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Record Player", priceGram: 12.6, supply: "#17K / 40K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Valentine Box", priceGram: 11.5, supply: "#18K / 40K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Flying Broom", priceGram: 11.2, supply: "#19K / 45K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Skull Flower", priceGram: 11.2, supply: "#20K / 45K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Mad Pumpkin", priceGram: 11.3, supply: "#21K / 50K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Top Hat", priceGram: 10.1, supply: "#22K / 50K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Sakura Flower", priceGram: 9.56, supply: "#23K / 60K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Fine Pen", priceGram: 8.9, supply: "#24K / 60K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Love Candle", priceGram: 8.91, supply: "#25K / 70K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Berry Box", priceGram: 8.65, supply: "#26K / 70K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Jingle Bells", priceGram: 7.85, supply: "#27K / 80K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Jelly Bunny", priceGram: 7.74, supply: "#28K / 80K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Evil Eye", priceGram: 7.67, supply: "#29K / 90K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Bunny Muffin", priceGram: 7.62, supply: "#30K / 90K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Joyful Bundle", priceGram: 7.31, supply: "#31K / 100K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
+            { name: "Jolly Chimp", priceGram: 6.9, supply: "#32K / 100K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
+            { name: "Sleigh Bell", priceGram: 6.85, supply: "#33K / 110K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Surge Board", priceGram: 6.49, supply: "#34K / 110K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Moon Pendant", priceGram: 6.31, supply: "#35K / 120K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Light Sword", priceGram: 6.17, supply: "#36K / 120K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Input Key", priceGram: 5.8, supply: "#37K / 130K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Lush Bouquet", priceGram: 5.79, supply: "#38K / 130K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Eternal Candle", priceGram: 5.65, supply: "#39K / 140K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
+            { name: "Restless Jar", priceGram: 5.49, supply: "#40K / 140K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Stellar Rocket", priceGram: 5.14, supply: "#41K / 150K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Spy Agaric", priceGram: 5.1, supply: "#42K / 150K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Spring Basket", priceGram: 5.09, supply: "#43K / 160K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Swag Bag", priceGram: 5.05, supply: "#44K / 160K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Witch Hat", priceGram: 4.98, supply: "#45K / 170K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Faith Amulet", priceGram: 4.95, supply: "#46K / 170K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Bow Tie", priceGram: 4.92, supply: "#47K / 180K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Pretty Posy", priceGram: 4.86, supply: "#48K / 180K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
+            { name: "Snoop Dogg", priceGram: 4.82, supply: "#49K / 190K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
+            { name: "Star Notepad", priceGram: 4.27, supply: "#50K / 190K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "B-Day Candle", priceGram: 4.6, supply: "#51K / 200K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
+            { name: "Mousse Cake", priceGram: 4.6, supply: "#52K / 200K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Clover Pin", priceGram: 4.59, supply: "#53K / 210K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Big Year", priceGram: 4.54, supply: "#54K / 210K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Victory Medal", priceGram: 4.49, supply: "#55K / 220K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Candy Cane", priceGram: 4.48, supply: "#56K / 220K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
+            { name: "Desk Calendar", priceGram: 4.45, supply: "#57K / 230K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Fresh Socks", priceGram: 4.44, supply: "#58K / 230K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Cookie Heart", priceGram: 4.35, supply: "#59K / 240K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
+            { name: "Homemade Cake", priceGram: 4.35, supply: "#60K / 240K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Jack-in-the-Box", priceGram: 4.35, supply: "#61K / 250K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
+            { name: "Liberty Figure", priceGram: 4.35, supply: "#62K / 250K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Snow Mittens", priceGram: 4.3, supply: "#63K / 260K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
+            { name: "Party Sparkler", priceGram: 4.2, supply: "#64K / 260K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Happy Brownie", priceGram: 4.21, supply: "#65K / 270K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Ginger Cookie", priceGram: 4.1, supply: "#66K / 270K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
+            { name: "Hex Pot", priceGram: 4.1, supply: "#67K / 280K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Snow Globe", priceGram: 4.1, supply: "#68K / 280K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Timeless Book", priceGram: 4.1, supply: "#69K / 290K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Spiced Wine", priceGram: 4.11, supply: "#70K / 290K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Holiday Drink", priceGram: 3.96, supply: "#71K / 300K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
+            { name: "Mood Pack", priceGram: 3.97, supply: "#72K / 300K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
+            { name: "Easter Egg", priceGram: 3.93, supply: "#73K / 310K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Hypno Lollipop", priceGram: 3.9, supply: "#74K / 310K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
+            { name: "Santa Hat", priceGram: 3.9, supply: "#75K / 320K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
+            { name: "Tama Gadget", priceGram: 3.9, supply: "#76K / 320K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
+            { name: "Jester Hat", priceGram: 3.89, supply: "#77K / 330K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
+            { name: "Lunar Snake", priceGram: 3.75, supply: "#78K / 330K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Pet Snake", priceGram: 3.74, supply: "#79K / 340K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
+            { name: "Chill Flame", priceGram: 3.7, supply: "#80K / 340K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
+            { name: "Snake Box", priceGram: 3.7, supply: "#81K / 350K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Winter Wreath", priceGram: 3.7, supply: "#82K / 350K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
+            { name: "Instant Ramen", priceGram: 3.66, supply: "#83K / 360K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
+            { name: "Xmas Stocking", priceGram: 3.63, supply: "#84K / 360K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
+            { name: "Ice Cream", priceGram: 3.6, supply: "#85K / 370K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Lol Pop", priceGram: 3.6, supply: "#86K / 370K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
+            { name: "Whip Cupcake", priceGram: 3.6, supply: "#87K / 380K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Vice Cream", priceGram: 3.59, supply: "#88K / 380K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
+            { name: "Pool Float", priceGram: 3.69, supply: "#89K / 400K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
+            { name: "Money Pot", priceGram: 4.31, supply: "#90K / 400K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" }
         ];
 
         const items = allGiftsList.map((item, idx) => ({
             id: idx + 1,
+            ruName: item.name, // дублируем для поиска
             ...item
         }));
 
@@ -645,7 +741,7 @@
                             <img src="${item.img}" alt="${item.name}">
                         </div>
                         <div class="card-title">${item.name}</div>
-                        <div class="card-sub">${item.ruName}</div>
+                        <div class="card-sub">${item.cat}</div>
                         <div class="price-box">
                             <span class="price-ton">${item.priceGram} GRAM</span>
                             <span class="price-usd">${priceUsd}</span>
@@ -671,7 +767,7 @@
 
             document.getElementById('modalGiftImg').src = item.img;
             document.getElementById('modalGiftTitle').innerText = item.name;
-            document.getElementById('modalGiftSub').innerText = `(${item.ruName})`;
+            document.getElementById('modalGiftSub').innerText = `(${item.cat})`;
             document.getElementById('modalGiftSupply').innerText = item.supply;
             document.getElementById('modalGiftGram').innerText = `${item.priceGram} GRAM`;
             document.getElementById('modalGiftUsd').innerText = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -691,7 +787,7 @@
         function filterItems() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filtered = items.filter(item => {
-                const matchesSearch = item.name.toLowerCase().includes(search) || item.ruName.toLowerCase().includes(search);
+                const matchesSearch = item.name.toLowerCase().includes(search);
                 const matchesCat = (currentCategory === 'all') || (item.cat === currentCategory);
                 return matchesSearch && matchesCat;
             });
