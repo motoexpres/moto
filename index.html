@@ -57,9 +57,35 @@
             font-size: 20px;
         }
 
-        .brand-title {
-            font-size: 18px;
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-btn-fallback {
             font-weight: 700;
+            font-size: 14px;
+            color: var(--accent-color);
         }
 
         #ton-connect {
@@ -163,6 +189,7 @@
             font-weight: 500;
         }
 
+        /* Невидимая ссылка поверх картинки */
         .img-container {
             width: 100%;
             height: 120px;
@@ -170,12 +197,23 @@
             align-items: center;
             justify-content: center;
             margin: 4px 0 12px;
+            position: relative;
         }
 
         .img-container img {
             max-width: 100px;
             max-height: 100px;
             object-fit: contain;
+        }
+
+        .gift-link-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: 2;
         }
 
         .card-title {
@@ -229,6 +267,7 @@
             backdrop-filter: blur(12px);
             padding: 12px 16px;
             border-top: 1px solid var(--card-border);
+            z-index: 100;
         }
 
         .sell-btn {
@@ -243,7 +282,75 @@
             cursor: pointer;
         }
 
-        /* Модальное окно с инструкцией продажи */
+        /* Экран профиля */
+        .profile-screen {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            background: rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 2px solid var(--accent-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .stat-val {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .stat-lbl {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .inventory-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* Модалка продажи */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -306,35 +413,70 @@
 <body>
 
     <header>
-        <div class="brand">
+        <div class="brand" onclick="showMarket()" style="cursor: pointer;">
             <div class="brand-logo">♾</div>
             <div class="brand-title">Meta</div>
         </div>
-        <div id="ton-connect"></div>
+        <div class="header-actions">
+            <div id="ton-connect"></div>
+            <div class="profile-btn" id="profileBtn" onclick="toggleProfile()">
+                <div class="profile-btn-fallback" id="avatarFallback">U</div>
+            </div>
+        </div>
     </header>
 
-    <div class="banner">
-        <h2>Маркетплейс NFT Подарков</h2>
-        <p>Покупайте и продавайте редкие атрибуты Telegram</p>
+    <!-- Главная страница Маркета -->
+    <div id="marketPage">
+        <div class="banner">
+            <h2>Маркетплейс NFT Подарков</h2>
+            <p>Покупайте и продавайте редкие атрибуты Telegram</p>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-box" placeholder="Поиск атрибута..." oninput="filterItems()">
+            <div class="categories">
+                <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
+                <button class="cat-btn" onclick="setCategory('pepe', this)">Pepe</button>
+                <button class="cat-btn" onclick="setCategory('rare', this)">Редкие</button>
+                <button class="cat-btn" onclick="setCategory('popular', this)">Популярные</button>
+            </div>
+        </div>
+
+        <div class="grid" id="itemsGrid"></div>
     </div>
 
-    <div class="controls">
-        <input type="text" id="searchInput" class="search-box" placeholder="Поиск атрибута..." oninput="filterItems()">
-        <div class="categories">
-            <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
-            <button class="cat-btn" onclick="setCategory('pepe', this)">Pepe</button>
-            <button class="cat-btn" onclick="setCategory('rare', this)">Редкие</button>
-            <button class="cat-btn" onclick="setCategory('popular', this)">Популярные</button>
+    <!-- Страница Профиля -->
+    <div id="profilePage" class="profile-screen">
+        <div class="profile-card">
+            <div class="user-avatar" id="profileAvatarBig">
+                <span id="bigAvatarFallback">U</span>
+            </div>
+            <h2 id="userName">Пользователь</h2>
+            <p id="userHandle" style="font-size: 12px; color: var(--text-sub);">@username</p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-val" id="soldTonVal">0 TON</div>
+                    <div class="stat-lbl">Продано всего</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="soldCountVal">0 NFT</div>
+                    <div class="stat-lbl">Продано подарков</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="inventory-section">
+            <h3>Инвентарь подарков</h3>
+            <div class="grid" id="inventoryGrid"></div>
         </div>
     </div>
-
-    <div class="grid" id="itemsGrid"></div>
 
     <div class="footer-action">
         <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
     </div>
 
-    <!-- Модалка инструкции -->
+    <!-- Модалка продажи -->
     <div class="modal-overlay" id="sellModal">
         <div class="modal-content">
             <div class="modal-title">Как продать подарок?</div>
@@ -356,23 +498,48 @@
             buttonRootId: 'ton-connect'
         });
 
-        // Большой каталог реальных NFT Подарков Telegram (изображения подгружаются с Fragment API)
+        // Данные профиля из WebApp API
+        const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user", photo_url: "" };
+        
+        function initUserProfile() {
+            const nameEl = document.getElementById('userName');
+            const handleEl = document.getElementById('userHandle');
+            const avatarBtn = document.getElementById('profileBtn');
+            const bigAvatar = document.getElementById('profileAvatarBig');
+
+            nameEl.innerText = userData.first_name + (userData.last_name ? " " + userData.last_name : "");
+            handleEl.innerText = userData.username ? "@" + userData.username : "Без юзернейма";
+
+            if (userData.photo_url) {
+                avatarBtn.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
+                bigAvatar.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
+            } else {
+                const letter = (userData.first_name || "U")[0].toUpperCase();
+                document.getElementById('avatarFallback').innerText = letter;
+                document.getElementById('bigAvatarFallback').innerText = letter;
+            }
+        }
+
+        // Каталог NFT Подарков Telegram с встроенными невидимыми NFT-ссылками
         const items = [
-            { id: 1, name: "Plush Pepe #142", priceTon: 450, priceUsd: 3150, img: "https://nft.fragment.com/gift/plush-pepe.webp", supply: "#142 / 500", cat: "pepe" },
-            { id: 2, name: "Frog Pepe #892", priceTon: 120, priceUsd: 840, img: "https://nft.fragment.com/gift/frog-pepe.webp", supply: "#892 / 2.5K", cat: "pepe" },
-            { id: 3, name: "Green Star #504", priceTon: 85, priceUsd: 595, img: "https://nft.fragment.com/gift/green-star.webp", supply: "#504 / 5K", cat: "rare" },
-            { id: 4, name: "Santa Hat #12", priceTon: 310, priceUsd: 2170, img: "https://nft.fragment.com/gift/santa-hat.webp", supply: "#12 / 1K", cat: "rare" },
-            { id: 5, name: "Diamond Ring #340", priceTon: 65, priceUsd: 455, img: "https://nft.fragment.com/gift/diamond-ring.webp", supply: "#340 / 10K", cat: "popular" },
-            { id: 6, name: "Golden Skull #99", priceTon: 500, priceUsd: 3500, img: "https://nft.fragment.com/gift/golden-skull.webp", supply: "#99 / 250", cat: "rare" },
-            { id: 7, name: "Bond #007", priceTon: 890, priceUsd: 6230, img: "https://nft.fragment.com/gift/bond.webp", supply: "#7 / 100", cat: "rare" },
-            { id: 8, name: "Cyber Helmet #412", priceTon: 210, priceUsd: 1470, img: "https://nft.fragment.com/gift/cyber-helmet.webp", supply: "#412 / 1.5K", cat: "popular" },
-            { id: 9, name: "Magic Potion #11", priceTon: 45, priceUsd: 315, img: "https://nft.fragment.com/gift/magic-potion.webp", supply: "#11 / 15K", cat: "popular" },
-            { id: 10, name: "Gold Watch #88", priceTon: 180, priceUsd: 1260, img: "https://nft.fragment.com/gift/gold-watch.webp", supply: "#88 / 3K", cat: "popular" },
-            { id: 11, name: "VR Glasses #65", priceTon: 95, priceUsd: 665, img: "https://nft.fragment.com/gift/vr-glasses.webp", supply: "#65 / 4K", cat: "popular" },
-            { id: 12, name: "Neon Cat #303", priceTon: 340, priceUsd: 2380, img: "https://nft.fragment.com/gift/neon-cat.webp", supply: "#303 / 800", cat: "rare" }
+            { id: 1, name: "Plush Pepe #142", priceTon: 450, priceUsd: 3150, img: "https://nft.fragment.com/gift/plush-pepe.webp", nftLink: "https://t.me/nft/plush-pepe-142", supply: "#142 / 500", cat: "pepe" },
+            { id: 2, name: "Frog Pepe #892", priceTon: 120, priceUsd: 840, img: "https://nft.fragment.com/gift/frog-pepe.webp", nftLink: "https://t.me/nft/frog-pepe-892", supply: "#892 / 2.5K", cat: "pepe" },
+            { id: 3, name: "Green Star #504", priceTon: 85, priceUsd: 595, img: "https://nft.fragment.com/gift/green-star.webp", nftLink: "https://t.me/nft/green-star-504", supply: "#504 / 5K", cat: "rare" },
+            { id: 4, name: "Santa Hat #12", priceTon: 310, priceUsd: 2170, img: "https://nft.fragment.com/gift/santa-hat.webp", nftLink: "https://t.me/nft/santa-hat-12", supply: "#12 / 1K", cat: "rare" },
+            { id: 5, name: "Diamond Ring #340", priceTon: 65, priceUsd: 455, img: "https://nft.fragment.com/gift/diamond-ring.webp", nftLink: "https://t.me/nft/diamond-ring-340", supply: "#340 / 10K", cat: "popular" },
+            { id: 6, name: "Golden Skull #99", priceTon: 500, priceUsd: 3500, img: "https://nft.fragment.com/gift/golden-skull.webp", nftLink: "https://t.me/nft/golden-skull-99", supply: "#99 / 250", cat: "rare" },
+            { id: 7, name: "Bond #007", priceTon: 890, priceUsd: 6230, img: "https://nft.fragment.com/gift/bond.webp", nftLink: "https://t.me/nft/bond-007", supply: "#7 / 100", cat: "rare" },
+            { id: 8, name: "Cyber Helmet #412", priceTon: 210, priceUsd: 1470, img: "https://nft.fragment.com/gift/cyber-helmet.webp", nftLink: "https://t.me/nft/cyber-helmet-412", supply: "#412 / 1.5K", cat: "popular" }
+        ];
+
+        // Инвентарь пользователя для демонстрации
+        const userInventory = [
+            { id: 101, name: "Magic Potion #11", priceTon: 45, priceUsd: 315, img: "https://nft.fragment.com/gift/magic-potion.webp", nftLink: "https://t.me/nft/magic-potion-11", supply: "#11 / 15K" },
+            { id: 102, name: "Gold Watch #88", priceTon: 180, priceUsd: 1260, img: "https://nft.fragment.com/gift/gold-watch.webp", nftLink: "https://t.me/nft/gold-watch-88", supply: "#88 / 3K" }
         ];
 
         let currentCategory = 'all';
+        let isProfileOpen = false;
 
         function renderGrid(data) {
             const grid = document.getElementById('itemsGrid');
@@ -384,7 +551,9 @@
                             <span class="badge">${item.supply}</span>
                         </div>
                         <div class="img-container">
-                            <img src="${item.img}?t=${Date.now()}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
+                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
+                            <!-- Прозрачная ссылка на NFT подарок -->
+                            <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
                         </div>
                         <div class="card-title">${item.name}</div>
                         <div class="price-box">
@@ -392,6 +561,33 @@
                             <span class="price-usd">$${item.priceUsd}</span>
                         </div>
                         <button class="buy-btn" onclick="buyItem('${item.name}', ${item.priceTon})">Купить</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            if (userInventory.length === 0) {
+                grid.innerHTML = '<div style="grid-column: span 2; color: var(--text-sub); text-align: center; padding: 20px;">Инвентарь пуст</div>';
+                return;
+            }
+            userInventory.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="badge">${item.supply}</span>
+                        </div>
+                        <div class="img-container">
+                            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://nft.fragment.com/gift/green-star.webp'">
+                            <a href="${item.nftLink}" target="_blank" class="gift-link-overlay"></a>
+                        </div>
+                        <div class="card-title">${item.name}</div>
+                        <div class="price-box">
+                            <span class="price-ton">${item.priceTon} TON</span>
+                            <span class="price-usd">$${item.priceUsd}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -412,6 +608,23 @@
             btn.classList.add('active');
             currentCategory = cat;
             filterItems();
+        }
+
+        function toggleProfile() {
+            isProfileOpen = !isProfileOpen;
+            if (isProfileOpen) {
+                document.getElementById('marketPage').style.display = 'none';
+                document.getElementById('profilePage').style.display = 'flex';
+                renderInventory();
+            } else {
+                showMarket();
+            }
+        }
+
+        function showMarket() {
+            isProfileOpen = false;
+            document.getElementById('marketPage').style.display = 'block';
+            document.getElementById('profilePage').style.display = 'none';
         }
 
         async function buyItem(name, priceTon) {
@@ -437,7 +650,6 @@
             }
         }
 
-        // Функции модалки продажи
         function openSellModal() {
             document.getElementById('sellModal').style.display = 'flex';
         }
@@ -446,6 +658,7 @@
             document.getElementById('sellModal').style.display = 'none';
         }
 
+        initUserProfile();
         renderGrid(items);
     </script>
 </body>
