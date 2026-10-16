@@ -2,855 +2,832 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Meta Market</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ton Keeper</title>
     <style>
         :root {
-            --bg-color: #0d0d11;
-            --card-bg: #15151c;
-            --card-border: rgba(255, 255, 255, 0.08);
-            --accent-color: #8b5cf6;
-            --text-main: #ffffff;
-            --text-sub: #8e8e93;
-            --badge-bg: rgba(255, 255, 255, 0.08);
+            --bg-color: #000000;
+            --card-bg: #161618;
+            --card-hover: #222226;
+            --accent-blue: #007aff;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --border-color: #2c2c2e;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 16px;
-            padding-bottom: 100px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
 
-        header {
+        .phone-container {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 450px) {
+            .phone-container {
+                max-width: 414px;
+                height: 844px;
+                border-radius: 44px;
+                border: 10px solid #222;
+                box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            }
+        }
+
+        /* Top Bar */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 12px 16px;
+            flex-shrink: 0;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .brand-logo {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #7c3aed, #4c1d95);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .profile-btn {
+        .icon-btn {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .wallet-selector {
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
         }
 
-        .profile-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .wallet-selector svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-primary);
         }
 
-        .profile-btn-fallback {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--accent-color);
-        }
-
-        #ton-connect {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .banner {
-            background: linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(21, 21, 28, 0) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .banner h2 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .banner p {
-            font-size: 12px;
-            color: var(--text-sub);
-        }
-
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-            background: var(--card-bg);
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-        }
-
-        .categories {
+        .top-icons {
             display: flex;
             gap: 8px;
-            overflow-x: auto;
-            white-space: nowrap;
         }
 
-        .categories::-webkit-scrollbar { display: none; }
-
-        .cat-btn {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--card-border);
-            background: var(--card-bg);
-            color: var(--text-sub);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
+        /* Content Scrollable Area */
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 16px 110px 16px;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .cat-btn.active {
-            background: #ffffff;
-            color: #000000;
-            border-color: #ffffff;
+        /* Balance Section */
+        .balance-section {
+            text-align: center;
+            margin: 10px 0 20px 0;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid var(--card-border);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.15s ease;
-        }
-
-        .card:active {
-            transform: scale(0.98);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .badge {
-            background: var(--badge-bg);
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            color: var(--text-sub);
-            font-weight: 600;
-        }
-
-        .img-container {
-            width: 100%;
-            height: 120px;
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 4px 0 12px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        .img-container img {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-sub {
-            font-size: 11px;
-            color: var(--text-sub);
-            margin-bottom: 8px;
-        }
-
-        .price-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px 8px;
+        .balance-amount span.battery-icon {
+            font-size: 18px;
+            background: rgba(0, 122, 255, 0.15);
+            color: #007aff;
+            padding: 2px 6px;
             border-radius: 8px;
         }
 
-        .price-ton {
-            font-size: 13px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .price-usd {
-            font-size: 11px;
-            color: #34d399;
-            font-weight: 600;
-        }
-
-        .buy-btn {
-            background: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .footer-action {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(13, 13, 17, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 12px 16px;
-            border-top: 1px solid var(--card-border);
-            z-index: 100;
-        }
-
-        .sell-btn {
-            width: 100%;
-            background: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
+        .wallet-address {
+            color: var(--text-secondary);
             font-size: 14px;
+            margin-top: 4px;
+            display: inline-block;
             cursor: pointer;
         }
 
-        .profile-screen {
-            display: none;
+        /* Action Buttons */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .action-item {
+            display: flex;
             flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
         }
 
-        .profile-card {
+        .action-circle {
+            width: 52px;
+            height: 52px;
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-primary);
         }
 
-        .user-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            background: rgba(139, 92, 246, 0.2);
+        .action-label {
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        /* Banner Card */
+        .banner-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .banner-text h3 {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+
+        .banner-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .banner-img {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #007aff22 0%, #007aff88 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            font-weight: 700;
-            overflow: hidden;
-            border: 2px solid var(--accent-color);
         }
 
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .close-banner {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px;
-        }
-
-        .stat-val {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-color);
-        }
-
-        .stat-lbl {
-            font-size: 11px;
-            color: var(--text-sub);
-            margin-top: 4px;
-        }
-
-        .empty-inv {
-            grid-column: span 2;
-            text-align: center;
-            padding: 40px 20px;
+        /* Raffle Card */
+        .raffle-card {
             background: var(--card-bg);
-            border: 1px dashed var(--card-border);
             border-radius: 16px;
-            color: var(--text-sub);
-            font-size: 13px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            color: inherit;
+            text-align: left;
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
+        .raffle-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .raffle-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 122, 255, 0.2);
+            color: var(--accent-blue);
+            border-radius: 10px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            font-size: 16px;
         }
 
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 24px;
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
+        .raffle-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .arrow-right {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Tabs Header */
+        .tabs-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding-bottom: 4px;
             position: relative;
         }
 
-        .modal-gift-img {
-            width: 140px;
-            height: 140px;
-            object-fit: contain;
-            margin: 10px auto 16px;
-            filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.4));
+        .tab-btn.active {
+            color: var(--text-primary);
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 4px;
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
         }
 
-        .modal-supply {
-            display: inline-block;
-            background: var(--badge-bg);
-            color: var(--text-sub);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .modal-price-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px;
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
-        .modal-price-gram {
+        .section-title {
             font-size: 18px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .modal-price-usd {
-            font-size: 14px;
-            color: #34d399;
             font-weight: 700;
         }
 
-        .modal-steps {
-            text-align: left;
-            font-size: 13px;
-            color: #d1d5db;
-            line-height: 1.6;
-            margin-bottom: 20px;
+        .manage-btn {
+            color: var(--text-secondary);
+            font-size: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        .modal-steps mark {
-            background: rgba(139, 92, 246, 0.2);
-            color: #a78bfa;
-            padding: 2px 6px;
-            border-radius: 4px;
+        /* Crypto List */
+        .list-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .list-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .crypto-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #007aff;
+            color: #fff;
+        }
+
+        .crypto-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .verified-badge {
+            color: #007aff;
+            font-size: 13px;
+        }
+
+        .crypto-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .apy-tag {
+            background: rgba(52, 199, 89, 0.15);
+            color: #34c759;
+            padding: 2px 5px;
+            border-radius: 6px;
+            font-size: 10px;
             font-weight: 600;
         }
 
-        .modal-close {
-            background: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
-            font-size: 14px;
+        .list-item-right {
+            text-align: right;
         }
+
+        .crypto-balance {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .crypto-fiat {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* NFT Grid */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .nft-card {
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .nft-img-box {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            margin-bottom: 10px;
+        }
+
+        .nft-info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+
+        .nft-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nft-price-badge {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .price-left {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .for-sale-tag {
+            background: #28c76f;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .nft-timer {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: left;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background: rgba(22, 22, 24, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .nav-item.active {
+            color: var(--accent-blue);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Modal window */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+        .modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+        .modal-content h3 { margin-bottom: 10px; font-size: 17px; }
+        .modal-content p { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; white-space: pre-line; }
+        .modal-btn {
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand" onclick="showMarket()">
-            <div class="brand-logo">♾</div>
-            <div class="brand-title">Meta</div>
+<div class="phone-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <button class="icon-btn" id="btnScan">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3M20 7V4h-3M4 17v3h3M20 17v3h-3"/></svg>
+        </button>
+        <div class="wallet-selector" id="btnWalletSelect">
+            <span>Кошелёк</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
         </div>
-        <div class="header-actions">
-            <div id="ton-connect"></div>
-            <div class="profile-btn" id="profileBtn" onclick="toggleProfile()">
-                <div class="profile-btn-fallback" id="avatarFallback">U</div>
-            </div>
-        </div>
-    </header>
-
-    <div id="marketPage">
-        <div class="banner">
-            <h2>Маркетплейс NFT Подарков</h2>
-            <p>Покупайте и продавайте редкие атрибуты Telegram</p>
-        </div>
-
-        <div class="controls">
-            <input type="text" id="searchInput" class="search-box" placeholder="Поиск атрибута..." oninput="filterItems()">
-            <div class="categories">
-                <button class="cat-btn active" onclick="setCategory('all', this)">Все</button>
-                <button class="cat-btn" onclick="setCategory('rare', this)">Редкие</button>
-                <button class="cat-btn" onclick="setCategory('premium', this)">Премиум</button>
-                <button class="cat-btn" onclick="setCategory('popular', this)">Популярные</button>
-            </div>
-        </div>
-
-        <div class="grid" id="itemsGrid"></div>
-    </div>
-
-    <div id="profilePage" class="profile-screen">
-        <div class="profile-card">
-            <div class="user-avatar" id="profileAvatarBig">
-                <span id="bigAvatarFallback">U</span>
-            </div>
-            <h2 id="userName">Пользователь</h2>
-            <p id="userHandle" style="font-size: 12px; color: var(--text-sub);">@username</p>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-val" id="soldTonVal">0 GRAM</div>
-                    <div class="stat-lbl">Продано всего</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-val" id="soldCountVal">0 NFT</div>
-                    <div class="stat-lbl">Продано подарков</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="inventory-section">
-            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Инвентарь подарков</h3>
-            <div class="grid" id="inventoryGrid"></div>
+        <div class="top-icons">
+            <button class="icon-btn" id="btnHistory">🕒</button>
+            <button class="icon-btn" id="btnSettings">⚙️</button>
         </div>
     </div>
 
-    <div class="footer-action">
-        <button class="sell-btn" onclick="openSellModal()">Продать свой NFT подарок</button>
-    </div>
+    <!-- Scrollable Body -->
+    <div class="content-scroll">
+        <!-- Balance -->
+        <div class="balance-section">
+            <div class="balance-amount">
+                $ 0,00 <span class="battery-icon">⚡</span>
+            </div>
+            <div class="wallet-address" id="btnCopyAddress">
+                UQD1...qaHR <span>↕</span>
+            </div>
+        </div>
 
-    <!-- Модальное окно просмотра подарка -->
-    <div class="modal-overlay" id="viewGiftModal">
-        <div class="modal-content">
-            <img src="" id="modalGiftImg" class="modal-gift-img" alt="NFT Gift">
-            <div class="modal-title" id="modalGiftTitle">Gift Name</div>
-            <div id="modalGiftSub" style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">(Название)</div>
-            <div class="modal-supply" id="modalGiftSupply">#1 / 10K</div>
-            
-            <div class="modal-price-card">
-                <div>
-                    <div style="font-size: 11px; color: var(--text-sub);">Стоимость</div>
-                    <div class="modal-price-gram" id="modalGiftGram">0 GRAM</div>
-                </div>
-                <div class="modal-price-usd" id="modalGiftUsd">$0.00</div>
+        <!-- Action Buttons -->
+        <div class="actions-grid">
+            <button class="action-item" id="btnSend">
+                <div class="action-circle">⬆️</div>
+                <div class="action-label">Отправить</div>
+            </button>
+            <button class="action-item" id="btnReceive">
+                <div class="action-circle">⬇️</div>
+                <div class="action-label">Пополнить</div>
+            </button>
+            <button class="action-item" id="btnExchange">
+                <div class="action-circle">🔄</div>
+                <div class="action-label">Обменять</div>
+            </button>
+            <button class="action-item" id="btnStake">
+                <div class="action-circle">📈</div>
+                <div class="action-label">Застейкать</div>
+            </button>
+        </div>
+
+        <!-- Banner -->
+        <div class="banner-card" id="bannerCard">
+            <div class="banner-text">
+                <h3>Начните работу с кошельком<br>— шаг за шагом</h3>
+                <p>Начать &gt;</p>
+            </div>
+            <div class="banner-img">🧭</div>
+            <button class="close-banner" id="btnCloseBanner">✕</button>
+        </div>
+
+        <!-- Raffle -->
+        <button class="raffle-card" id="btnRaffle">
+            <div class="raffle-left">
+                <div class="raffle-icon">⭐</div>
+                <div class="raffle-title">Mystery Raffle</div>
+            </div>
+            <div class="arrow-right">&gt;</div>
+        </button>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" id="cryptoTabBtn">Крипто</button>
+            <button class="tab-btn" id="giftsTabBtn">Telegram подарки (61)</button>
+        </div>
+
+        <!-- Crypto Tab Content -->
+        <div id="cryptoTab">
+            <div class="section-header">
+                <div class="section-title">Крипто</div>
+                <button class="manage-btn" id="btnManage">Управлять ⚙️</button>
             </div>
 
-            <button class="buy-btn" id="modalBuyBtn" style="padding: 14px; font-size: 14px; margin-bottom: 10px;">Купить подарок</button>
-            <button class="modal-close" style="background: rgba(255,255,255,0.08);" onclick="closeViewModal()">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- Модальное окно инструкции продажи -->
-    <div class="modal-overlay" id="sellModal">
-        <div class="modal-content">
-            <div class="modal-title">Как продать подарок?</div>
-            <div class="modal-steps">
-                1. Передайте ваш NFT подарок боту <mark>ExpressGiftBuy</mark><br><br>
-                2. После передачи Ваш подарок мгновенно отобразится в вашем профиле бота.<br><br>
-                3. Вы сможете установить любую желаемую цену и выставить его на продажу!
-            </div>
-            <button class="modal-close" onclick="closeSellModal()">Понятно</button>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json',
-            buttonRootId: 'ton-connect'
-        });
-
-        // СТРОГИЙ КУРС: 1 GRAM = 1.44 USD
-        const GRAM_PRICE_USD = 1.44;
-
-        const userData = tg.initDataUnsafe?.user || { first_name: "Пользователь", username: "user", photo_url: "" };
-        
-        function initUserProfile() {
-            const nameEl = document.getElementById('userName');
-            const handleEl = document.getElementById('userHandle');
-            const avatarBtn = document.getElementById('profileBtn');
-            const bigAvatar = document.getElementById('profileAvatarBig');
-
-            nameEl.innerText = userData.first_name + (userData.last_name ? " " + userData.last_name : "");
-            handleEl.innerText = userData.username ? "@" + userData.username : "Без юзернейма";
-
-            if (userData.photo_url) {
-                avatarBtn.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
-                bigAvatar.innerHTML = `<img src="${userData.photo_url}" alt="Avatar">`;
-            } else {
-                const letter = (userData.first_name || "U")[0].toUpperCase();
-                document.getElementById('avatarFallback').innerText = letter;
-                document.getElementById('bigAvatarFallback').innerText = letter;
-            }
-        }
-
-        // АКТУАЛЬНЫЙ СПИСОК ПОДАРКОВ И ЦЕН ИЗ БАЗЫ
-        const allGiftsList = [
-            { name: "Plush Pepe", priceGram: 5152.0, supply: "#1 / 50", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-            { name: "Heart Locket", priceGram: 1020.0, supply: "#10 / 100", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Durov’s Cap", priceGram: 396.9, supply: "#50 / 200", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
-            { name: "Precious Peach", priceGram: 252.5, supply: "#100 / 500", cat: "премиум", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Scared Cat", priceGram: 191.3, supply: "#120 / 500", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Heroic Helmet", priceGram: 164.8, supply: "#200 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Mighty Arm", priceGram: 105.0, supply: "#300 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1055/1055687.png" },
-            { name: "Nail Bracelet", priceGram: 115.4, supply: "#350 / 1K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Astral Shard", priceGram: 113.7, supply: "#400 / 1.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Loot Bag", priceGram: 118.4, supply: "#450 / 1.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Westside Sign", priceGram: 91.6, supply: "#500 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Durov’s Glasses", priceGram: 90.0, supply: "#600 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Mini Oscar", priceGram: 72.6, supply: "#700 / 2K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Ion Gem", priceGram: 66.0, supply: "#800 / 2.5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Perfume Bottle", priceGram: 62.0, supply: "#900 / 3K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Gem Signet", priceGram: 58.5, supply: "#1K / 3K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Magic Potion", priceGram: 54.4, supply: "#1.2K / 4K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Artisan Brick", priceGram: 52.6, supply: "#1.5K / 5K", cat: "редкие", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Low Rider", priceGram: 49.9, supply: "#1.8K / 5K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Swiss Watch", priceGram: 47.1, supply: "#2K / 6K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Sharp Tongue", priceGram: 40.9, supply: "#2.2K / 6K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
-            { name: "Kissed Frog", priceGram: 39.8, supply: "#2.5K / 7K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Neko Helmet", priceGram: 34.9, supply: "#3K / 8K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Toy Bear", priceGram: 34.4, supply: "#3.5K / 9K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-            { name: "Voodoo Doll", priceGram: 34.1, supply: "#4K / 10K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Vintage Cigar", priceGram: 33.9, supply: "#4.5K / 10K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Genie Lamp", priceGram: 33.2, supply: "#5K / 12K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Signet Ring", priceGram: 30.7, supply: "#5.5K / 12K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Diamond Ring", priceGram: 27.8, supply: "#6K / 15K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Eternal Rose", priceGram: 25.2, supply: "#7K / 15K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Rare Bird", priceGram: 24.4, supply: "#8K / 18K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Electric Skull", priceGram: 24.4, supply: "#8.5K / 18K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Khabib’s Papakha", priceGram: 24.0, supply: "#9K / 20K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
-            { name: "Bling Binky", priceGram: 22.9, supply: "#9.5K / 20K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-            { name: "Cupid Charm", priceGram: 21.9, supply: "#10K / 25K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Sky Stilettos", priceGram: 19.4, supply: "#11K / 25K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Trapped Heart", priceGram: 15.3, supply: "#12K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "UFC Strike", priceGram: 14.8, supply: "#13K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
-            { name: "Ionic Dryer", priceGram: 14.9, supply: "#14K / 30K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Love Potion", priceGram: 14.0, supply: "#15K / 35K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Snoop Cigar", priceGram: 13.8, supply: "#16K / 35K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Record Player", priceGram: 12.6, supply: "#17K / 40K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Valentine Box", priceGram: 11.5, supply: "#18K / 40K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Flying Broom", priceGram: 11.2, supply: "#19K / 45K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Skull Flower", priceGram: 11.2, supply: "#20K / 45K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Mad Pumpkin", priceGram: 11.3, supply: "#21K / 50K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Top Hat", priceGram: 10.1, supply: "#22K / 50K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Sakura Flower", priceGram: 9.56, supply: "#23K / 60K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Fine Pen", priceGram: 8.9, supply: "#24K / 60K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Love Candle", priceGram: 8.91, supply: "#25K / 70K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Berry Box", priceGram: 8.65, supply: "#26K / 70K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Jingle Bells", priceGram: 7.85, supply: "#27K / 80K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Jelly Bunny", priceGram: 7.74, supply: "#28K / 80K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Evil Eye", priceGram: 7.67, supply: "#29K / 90K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Bunny Muffin", priceGram: 7.62, supply: "#30K / 90K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Joyful Bundle", priceGram: 7.31, supply: "#31K / 100K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
-            { name: "Jolly Chimp", priceGram: 6.9, supply: "#32K / 100K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" },
-            { name: "Sleigh Bell", priceGram: 6.85, supply: "#33K / 110K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Surge Board", priceGram: 6.49, supply: "#34K / 110K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Moon Pendant", priceGram: 6.31, supply: "#35K / 120K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Light Sword", priceGram: 6.17, supply: "#36K / 120K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Input Key", priceGram: 5.8, supply: "#37K / 130K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Lush Bouquet", priceGram: 5.79, supply: "#38K / 130K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Eternal Candle", priceGram: 5.65, supply: "#39K / 140K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
-            { name: "Restless Jar", priceGram: 5.49, supply: "#40K / 140K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Stellar Rocket", priceGram: 5.14, supply: "#41K / 150K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Spy Agaric", priceGram: 5.1, supply: "#42K / 150K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Spring Basket", priceGram: 5.09, supply: "#43K / 160K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Swag Bag", priceGram: 5.05, supply: "#44K / 160K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Witch Hat", priceGram: 4.98, supply: "#45K / 170K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Faith Amulet", priceGram: 4.95, supply: "#46K / 170K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Bow Tie", priceGram: 4.92, supply: "#47K / 180K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Pretty Posy", priceGram: 4.86, supply: "#48K / 180K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744546.png" },
-            { name: "Snoop Dogg", priceGram: 4.82, supply: "#49K / 190K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/924/924908.png" },
-            { name: "Star Notepad", priceGram: 4.27, supply: "#50K / 190K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "B-Day Candle", priceGram: 4.6, supply: "#51K / 200K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
-            { name: "Mousse Cake", priceGram: 4.6, supply: "#52K / 200K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Clover Pin", priceGram: 4.59, supply: "#53K / 210K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Big Year", priceGram: 4.54, supply: "#54K / 210K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Victory Medal", priceGram: 4.49, supply: "#55K / 220K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Candy Cane", priceGram: 4.48, supply: "#56K / 220K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
-            { name: "Desk Calendar", priceGram: 4.45, supply: "#57K / 230K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Fresh Socks", priceGram: 4.44, supply: "#58K / 230K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Cookie Heart", priceGram: 4.35, supply: "#59K / 240K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2589/2589175.png" },
-            { name: "Homemade Cake", priceGram: 4.35, supply: "#60K / 240K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Jack-in-the-Box", priceGram: 4.35, supply: "#61K / 250K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233512.png" },
-            { name: "Liberty Figure", priceGram: 4.35, supply: "#62K / 250K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Snow Mittens", priceGram: 4.3, supply: "#63K / 260K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3163/3163206.png" },
-            { name: "Party Sparkler", priceGram: 4.2, supply: "#64K / 260K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Happy Brownie", priceGram: 4.21, supply: "#65K / 270K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Ginger Cookie", priceGram: 4.1, supply: "#66K / 270K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682455.png" },
-            { name: "Hex Pot", priceGram: 4.1, supply: "#67K / 280K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Snow Globe", priceGram: 4.1, supply: "#68K / 280K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Timeless Book", priceGram: 4.1, supply: "#69K / 290K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Spiced Wine", priceGram: 4.11, supply: "#70K / 290K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Holiday Drink", priceGram: 3.96, supply: "#71K / 300K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2738/2738730.png" },
-            { name: "Mood Pack", priceGram: 3.97, supply: "#72K / 300K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1161/1161670.png" },
-            { name: "Easter Egg", priceGram: 3.93, supply: "#73K / 310K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Hypno Lollipop", priceGram: 3.9, supply: "#74K / 310K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
-            { name: "Santa Hat", priceGram: 3.9, supply: "#75K / 320K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
-            { name: "Tama Gadget", priceGram: 3.9, supply: "#76K / 320K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" },
-            { name: "Jester Hat", priceGram: 3.89, supply: "#77K / 330K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/1067/1067357.png" },
-            { name: "Lunar Snake", priceGram: 3.75, supply: "#78K / 330K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Pet Snake", priceGram: 3.74, supply: "#79K / 340K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3069/3069185.png" },
-            { name: "Chill Flame", priceGram: 3.7, supply: "#80K / 340K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/867/867831.png" },
-            { name: "Snake Box", priceGram: 3.7, supply: "#81K / 350K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Winter Wreath", priceGram: 3.7, supply: "#82K / 350K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744510.png" },
-            { name: "Instant Ramen", priceGram: 3.66, supply: "#83K / 360K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2276/2276814.png" },
-            { name: "Xmas Stocking", priceGram: 3.63, supply: "#84K / 360K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png" },
-            { name: "Ice Cream", priceGram: 3.6, supply: "#85K / 370K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Lol Pop", priceGram: 3.6, supply: "#86K / 370K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682446.png" },
-            { name: "Whip Cupcake", priceGram: 3.6, supply: "#87K / 380K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Vice Cream", priceGram: 3.59, supply: "#88K / 380K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/2682/2682411.png" },
-            { name: "Pool Float", priceGram: 3.69, supply: "#89K / 400K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/3233/3233496.png" },
-            { name: "Money Pot", priceGram: 4.31, supply: "#90K / 400K", cat: "популярные", img: "https://cdn-icons-png.flaticon.com/512/702/702797.png" }
-        ];
-
-        const items = allGiftsList.map((item, idx) => ({
-            id: idx + 1,
-            ruName: item.name, // дублируем для поиска
-            ...item
-        }));
-
-        // ПУСТОЙ ИНВЕНТАРЬ
-        const userInventory = [];
-
-        let currentCategory = 'all';
-        let isProfileOpen = false;
-
-        function renderGrid(data) {
-            const grid = document.getElementById('itemsGrid');
-            grid.innerHTML = '';
-            data.forEach(item => {
-                const priceUsd = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-                
-                grid.innerHTML += `
-                    <div class="card" onclick="openViewModal(${item.id})">
-                        <div class="card-header">
-                            <span class="badge">${item.supply}</span>
-                        </div>
-                        <div class="img-container">
-                            <img src="${item.img}" alt="${item.name}">
-                        </div>
-                        <div class="card-title">${item.name}</div>
-                        <div class="card-sub">${item.cat}</div>
-                        <div class="price-box">
-                            <span class="price-ton">${item.priceGram} GRAM</span>
-                            <span class="price-usd">${priceUsd}</span>
-                        </div>
-                        <button class="buy-btn" onclick="event.stopPropagation(); buyItem('${item.name}', ${item.priceGram})">Купить</button>
+            <div class="list-card" id="itemGram">
+                <div class="list-item-left">
+                    <div class="crypto-icon" style="background: linear-gradient(135deg, #0098ea, #0056b3);">💎</div>
+                    <div class="crypto-info">
+                        <h4>GRAM <span class="apy-tag">12,99 % APY</span> <span class="verified-badge">✔</span></h4>
+                        <div class="crypto-sub">$1,37 <span style="color: #34c759;">+2.90%</span></div>
                     </div>
-                `;
-            });
-        }
+                </div>
+                <div class="list-item-right">
+                    <div class="crypto-balance">0</div>
+                    <div class="crypto-fiat">$0</div>
+                </div>
+            </div>
 
-        function renderInventory() {
-            const grid = document.getElementById('inventoryGrid');
-            grid.innerHTML = '';
-            if (userInventory.length === 0) {
-                grid.innerHTML = '<div class="empty-inv">У вас пока нет выставленных на продажу подарков.<br>Нажмите «Продать свой NFT подарок» снизу.</div>';
-                return;
-            }
-        }
+            <div class="list-card" id="itemEth">
+                <div class="list-item-left">
+                    <div class="crypto-icon" style="background: linear-gradient(135deg, #627eea, #3c52a0);">Ξ</div>
+                    <div class="crypto-info">
+                        <h4>ETH <span class="verified-badge">✔</span></h4>
+                        <div class="crypto-sub">$2 457,06 <span style="color: #34c759;">+4.68%</span></div>
+                    </div>
+                </div>
+                <div class="list-item-right">
+                    <div class="crypto-balance">0</div>
+                    <div class="crypto-fiat">$0</div>
+                </div>
+            </div>
+        </div>
 
-        function openViewModal(id) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
+        <!-- Gifts Tab Content (61 gifts) -->
+        <div id="giftsTab" class="hidden">
+            <div class="section-header">
+                <div class="section-title">Telegram подарки (NFT)</div>
+            </div>
+            <div class="nft-grid" id="nftGridContainer">
+                <!-- Скрипт заполнит точно 61 подарок -->
+            </div>
+        </div>
 
-            document.getElementById('modalGiftImg').src = item.img;
-            document.getElementById('modalGiftTitle').innerText = item.name;
-            document.getElementById('modalGiftSub').innerText = `(${item.cat})`;
-            document.getElementById('modalGiftSupply').innerText = item.supply;
-            document.getElementById('modalGiftGram').innerText = `${item.priceGram} GRAM`;
-            document.getElementById('modalGiftUsd').innerText = (item.priceGram * GRAM_PRICE_USD).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-            
-            const buyBtn = document.getElementById('modalBuyBtn');
-            buyBtn.onclick = function() {
-                buyItem(item.name, item.priceGram);
-            };
+    </div>
 
-            document.getElementById('viewGiftModal').style.display = 'flex';
-        }
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item active" id="navWallet">
+            <span class="nav-icon">👛</span>
+            <span>Кошелёк</span>
+        </button>
+        <button class="nav-item" id="navTrade">
+            <span class="nav-icon">📊</span>
+            <span>Трейд</span>
+        </button>
+        <button class="nav-item" id="navBrowser">
+            <span class="nav-icon">🧭</span>
+            <span>Браузер</span>
+        </button>
+    </div>
+</div>
 
-        function closeViewModal() {
-            document.getElementById('viewGiftModal').style.display = 'none';
-        }
+<!-- Модальное окно -->
+<div class="modal" id="appModal">
+    <div class="modal-content" id="modalBox">
+        <h3 id="modalTitle">Уведомление</h3>
+        <p id="modalText">Текст сообщения...</p>
+        <button class="modal-btn" id="modalCloseBtn">OK</button>
+    </div>
+</div>
 
-        function filterItems() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = items.filter(item => {
-                const matchesSearch = item.name.toLowerCase().includes(search);
-                const matchesCat = (currentCategory === 'all') || (item.cat === currentCategory);
-                return matchesSearch && matchesCat;
-            });
-            renderGrid(filtered);
-        }
+<script>
+    // Генерация 61 подарка
+    const giftTypes = [
+        { name: "Swiss Watch", icon: "⌚", bg: "#5a6b7c", price: "888,888", timer: "" },
+        { name: "Ginger Cookie", icon: "🍪", bg: "#7c538a", price: "666,666", timer: "" },
+        { name: "Jingle Bells", icon: "🔔", bg: "#4e7262", price: "666,666", timer: "" },
+        { name: "Eternal Rose", icon: "🌹", bg: "#8a7462", price: "100,000", timer: "353 days 1 hour left" },
+        { name: "Plush Pepe", icon: "🐸", bg: "#4f6596", price: "99,994", timer: "2 days 11 hours left" },
+        { name: "Precious Peach", icon: "🍑", bg: "#8a4f65", price: "84,990", timer: "8 hours 23 minutes left" },
+        { name: "Loot Bag", icon: "👜", bg: "#537c78", price: "55,555", timer: "" },
+        { name: "Top Hat", icon: "🎩", bg: "#3e8a60", price: "50,618", timer: "" },
+        { name: "Durov's Cap", icon: "🧢", bg: "#2a2a2e", price: "34,560", timer: "1 day 19 hours left" },
+        { name: "Gold Star", icon: "⭐", bg: "#8a7b4f", price: "25,000", timer: "5 days left" }
+    ];
 
-        function setCategory(cat, btn) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCategory = cat;
-            filterItems();
-        }
+    const gridContainer = document.getElementById('nftGridContainer');
 
-        function toggleProfile() {
-            isProfileOpen = !isProfileOpen;
-            if (isProfileOpen) {
-                document.getElementById('marketPage').style.display = 'none';
-                document.getElementById('profilePage').style.display = 'flex';
-                renderInventory();
-            } else {
-                showMarket();
-            }
-        }
+    for (let i = 1; i <= 61; i++) {
+        const template = giftTypes[(i - 1) % giftTypes.length];
+        const uniqueId = 3000 + i;
+        
+        const card = document.createElement('div');
+        card.className = 'nft-card';
+        card.style.backgroundColor = template.bg;
+        
+        card.onclick = function() {
+            showModal(template.name + " #" + uniqueId, "Цена: 💎 " + template.price + " TON\nСтатус: For sale");
+        };
 
-        function showMarket() {
-            isProfileOpen = false;
-            document.getElementById('marketPage').style.display = 'block';
-            document.getElementById('profilePage').style.display = 'none';
-        }
+        card.innerHTML = `
+            <div class="nft-img-box">${template.icon}</div>
+            <div class="nft-info">
+                <div class="nft-name">${template.name} #${uniqueId}</div>
+                ${template.timer ? `<div class="nft-timer">${template.timer}</div>` : ''}
+                <div class="nft-price-badge">
+                    <div class="price-left">
+                        <span>💎</span> ${template.price}
+                    </div>
+                    <span class="for-sale-tag">For sale</span>
+                </div>
+            </div>
+        `;
+        gridContainer.appendChild(card);
+    }
 
-        async function buyItem(name, priceGram) {
-            if (!tonConnectUI.connected) {
-                tg.showAlert('Подключите кошелек для совершения сделки!');
-                tonConnectUI.openModal();
-                return;
-            }
+    // Управление модальным окном
+    function showModal(title, text) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalText').innerText = text;
+        document.getElementById('appModal').classList.add('open');
+    }
 
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 60,
-                messages: [{
-                    address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
-                    amount: (priceGram * 1000000000).toString()
-                }]
-            };
+    function closeModal() {
+        document.getElementById('appModal').classList.remove('open');
+    }
 
-            try {
-                await tonConnectUI.sendTransaction(transaction);
-                tg.showAlert('Запрос на транзакцию отправлен в кошелек!');
-            } catch (e) {
-                console.error(e);
-            }
-        }
+    document.getElementById('modalCloseBtn').onclick = closeModal;
+    document.getElementById('appModal').onclick = function(e) {
+        if (e.target === this) closeModal();
+    };
 
-        function openSellModal() {
-            document.getElementById('sellModal').style.display = 'flex';
-        }
+    // Переключение вкладок
+    const cryptoTab = document.getElementById('cryptoTab');
+    const giftsTab = document.getElementById('giftsTab');
+    const cryptoBtn = document.getElementById('cryptoTabBtn');
+    const giftsBtn = document.getElementById('giftsTabBtn');
 
-        function closeSellModal() {
-            document.getElementById('sellModal').style.display = 'none';
-        }
+    cryptoBtn.onclick = function() {
+        cryptoTab.classList.remove('hidden');
+        giftsTab.classList.add('hidden');
+        cryptoBtn.classList.add('active');
+        giftsBtn.classList.remove('active');
+    };
 
-        initUserProfile();
-        renderGrid(items);
-    </script>
+    giftsBtn.onclick = function() {
+        cryptoTab.classList.add('hidden');
+        giftsTab.classList.remove('hidden');
+        cryptoBtn.classList.remove('active');
+        giftsBtn.classList.add('active');
+    };
+
+    // Нижняя навигация
+    const navWallet = document.getElementById('navWallet');
+    const navTrade = document.getElementById('navTrade');
+    const navBrowser = document.getElementById('navBrowser');
+
+    function setActiveNav(el) {
+        [navWallet, navTrade, navBrowser].forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    navWallet.onclick = function() { setActiveNav(this); };
+    navTrade.onclick = function() { setActiveNav(this); showModal('Трейд', 'Графики и торговые пары TON DEX.'); };
+    navBrowser.onclick = function() { setActiveNav(this); showModal('Браузер', 'DApps и мини-приложения Telegram.'); };
+
+    // Обработчики кнопок
+    document.getElementById('btnScan').onclick = function() { showModal('Сканирование', 'Открытие сканера QR-кодов...'); };
+    document.getElementById('btnWalletSelect').onclick = function() { showModal('Кошельки', 'Управление кошельками Ton Keeper'); };
+    document.getElementById('btnHistory').onclick = function() { showModal('История', 'Список последних транзакций пуст.'); };
+    document.getElementById('btnSettings').onclick = function() { showModal('Настройки', 'Параметры безопасности и сети.'); };
+    document.getElementById('btnCopyAddress').onclick = function() { showModal('Адрес кошелька', 'Скопировано в буфер обмена:\nUQD1...qaHR'); };
+    document.getElementById('btnSend').onclick = function() { showModal('Отправить', 'Выберите актив для отправки.'); };
+    document.getElementById('btnReceive').onclick = function() { showModal('Пополнить', 'Выберите способ пополнения баланса.'); };
+    document.getElementById('btnExchange').onclick = function() { showModal('Обменять', 'Интерфейс обмена токенов (DEX).'); };
+    document.getElementById('btnStake').onclick = function() { showModal('Застейкать', 'Доступные пулы ликвидности и стейкинга.'); };
+    document.getElementById('btnRaffle').onclick = function() { showModal('Mystery Raffle', 'Розыгрыш призов среди владельцев NFT скоро начнётся!'); };
+    document.getElementById('btnManage').onclick = function() { showModal('Управление', 'Настройка видимости токенов.'); };
+    document.getElementById('itemGram').onclick = function() { showModal('GRAM', 'Баланс GRAM: 0 ($0)'); };
+    document.getElementById('itemEth').onclick = function() { showModal('ETH', 'Баланс ETH: 0 ($0)'); };
+
+    const banner = document.getElementById('bannerCard');
+    banner.onclick = function() { showModal('Гид', 'Вы прошли шаг 1 из 3.'); };
+    document.getElementById('btnCloseBanner').onclick = function(e) {
+        e.stopPropagation();
+        banner.style.display = 'none';
+    };
+</script>
+
 </body>
 </html>
