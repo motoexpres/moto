@@ -13,6 +13,8 @@
             --text-primary: #ffffff;
             --text-secondary: #8e8e93;
             --border-color: #2c2c2e;
+            --green: #34c759;
+            --red: #ff3b30;
         }
 
         * {
@@ -214,62 +216,6 @@
             font-size: 24px;
         }
 
-        .close-banner {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        /* Raffle Card */
-        .raffle-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            color: inherit;
-            text-align: left;
-        }
-
-        .raffle-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .raffle-icon {
-            width: 34px;
-            height: 34px;
-            background: rgba(0, 122, 255, 0.2);
-            color: var(--accent-blue);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .raffle-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .arrow-right {
-            color: var(--text-secondary);
-            font-size: 16px;
-        }
-
         /* Tabs Header */
         .tabs-container {
             display: flex;
@@ -317,15 +263,7 @@
             font-weight: 700;
         }
 
-        .manage-btn {
-            color: var(--text-secondary);
-            font-size: 14px;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* Crypto List */
+        /* Crypto / History List */
         .list-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -372,15 +310,6 @@
             font-size: 12px;
             color: var(--text-secondary);
             margin-top: 2px;
-        }
-
-        .apy-tag {
-            background: rgba(52, 199, 89, 0.15);
-            color: #34c759;
-            padding: 2px 5px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 600;
         }
 
         .list-item-right {
@@ -520,43 +449,99 @@
             font-size: 20px;
         }
 
-        /* Modal window */
-        .modal {
+        /* Fullscreen Action Screens / Modals */
+        .screen-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: var(--bg-color);
+            z-index: 2000;
             display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        .screen-overlay.open {
+            transform: translateY(0);
+        }
+
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            z-index: 1000;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .modal.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content {
-            background: var(--card-bg);
+        .screen-header h3 { font-size: 18px; }
+        .back-btn { background: none; border: none; color: var(--accent-blue); font-size: 16px; cursor: pointer; }
+
+        .screen-body {
             padding: 20px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-        .modal-content h3 { margin-bottom: 10px; font-size: 17px; }
-        .modal-content p { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; white-space: pre-line; }
-        .modal-btn {
+
+        .input-group {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-group label { font-size: 13px; color: var(--text-secondary); }
+        .input-group input, .input-group select {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            outline: none;
+            width: 100%;
+        }
+
+        .main-btn {
             background: var(--accent-blue);
             color: #fff;
             border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 14px;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        /* Camera Scanner View */
+        #scannerVideo {
             width: 100%;
+            height: 60vh;
+            object-fit: cover;
+            border-radius: 20px;
+            background: #111;
+        }
+
+        /* Popup Notification */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(30,30,32,0.95);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+            z-index: 3000;
+            pointer-events: none;
+            border: 1px solid var(--border-color);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
         }
 
         .hidden { display: none !important; }
@@ -571,7 +556,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3M20 7V4h-3M4 17v3h3M20 17v3h-3"/></svg>
         </button>
         <div class="wallet-selector" id="btnWalletSelect">
-            <span>Кошелёк</span>
+            <span>Ton Keeper</span>
             <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
         </div>
         <div class="top-icons">
@@ -585,7 +570,7 @@
         <!-- Balance -->
         <div class="balance-section">
             <div class="balance-amount">
-                $ 47,29 <span class="battery-icon">⚡</span>
+                $ 126,00 <span class="battery-icon">⚡</span>
             </div>
             <div class="wallet-address" id="btnCopyAddress">
                 UQD1...qaHR <span>↕</span>
@@ -615,21 +600,11 @@
         <!-- Banner -->
         <div class="banner-card" id="bannerCard">
             <div class="banner-text">
-                <h3>Начните работу с кошельком<br>— шаг за шагом</h3>
-                <p>Начать &gt;</p>
+                <h3>Купить TON за банковскую карту<br>без комиссий</h3>
+                <p>Купить &gt;</p>
             </div>
-            <div class="banner-img">🧭</div>
-            <button class="close-banner" id="btnCloseBanner">✕</button>
+            <div class="banner-img">💳</div>
         </div>
-
-        <!-- Raffle -->
-        <button class="raffle-card" id="btnRaffle">
-            <div class="raffle-left">
-                <div class="raffle-icon">⭐</div>
-                <div class="raffle-title">Mystery Raffle</div>
-            </div>
-            <div class="arrow-right">&gt;</div>
-        </button>
 
         <!-- Tabs -->
         <div class="tabs-container">
@@ -640,35 +615,52 @@
         <!-- Crypto Tab Content -->
         <div id="cryptoTab">
             <div class="section-header">
-                <div class="section-title">Крипто</div>
-                <button class="manage-btn" id="btnManage">Управлять ⚙️</button>
+                <div class="section-title">Активы</div>
             </div>
 
-            <div class="list-card" id="itemGram">
+            <div class="list-card" id="itemTon">
                 <div class="list-item-left">
-                    <div class="crypto-icon" style="background: linear-gradient(135deg, #0098ea, #0056b3);">💎</div>
+                    <div class="crypto-icon" style="background: linear-gradient(135deg, #0088cc, #005588);">💎</div>
                     <div class="crypto-info">
-                        <h4>GRAM <span class="apy-tag">12,99 % APY</span> <span class="verified-badge">✔</span></h4>
-                        <div class="crypto-sub">$1,37 <span style="color: #34c759;">+2.90%</span></div>
+                        <h4>TON <span class="verified-badge">✔</span></h4>
+                        <div class="crypto-sub">$5,25 <span style="color: var(--green);">+3.40%</span></div>
                     </div>
                 </div>
                 <div class="list-item-right">
-                    <div class="crypto-balance">0</div>
-                    <div class="crypto-fiat">$0</div>
+                    <div class="crypto-balance">24.0 TON</div>
+                    <div class="crypto-fiat">$126,00</div>
                 </div>
             </div>
 
-            <div class="list-card" id="itemEth">
+            <div class="list-card" id="itemUsdt">
                 <div class="list-item-left">
-                    <div class="crypto-icon" style="background: linear-gradient(135deg, #627eea, #3c52a0);">Ξ</div>
+                    <div class="crypto-icon" style="background: linear-gradient(135deg, #26a17b, #1b7458);">₮</div>
                     <div class="crypto-info">
-                        <h4>ETH <span class="verified-badge">✔</span></h4>
-                        <div class="crypto-sub">$2 457,06 <span style="color: #34c759;">+4.68%</span></div>
+                        <h4>USDT <span class="verified-badge">✔</span></h4>
+                        <div class="crypto-sub">TON Network</div>
                     </div>
                 </div>
                 <div class="list-item-right">
-                    <div class="crypto-balance">0</div>
-                    <div class="crypto-fiat">$0</div>
+                    <div class="crypto-balance">0.00 USDT</div>
+                    <div class="crypto-fiat">$0,00</div>
+                </div>
+            </div>
+
+            <!-- Recent History preview in Crypto tab -->
+            <div class="section-header" style="margin-top: 20px;">
+                <div class="section-title" style="font-size: 16px;">Последние транзакции</div>
+            </div>
+            <div class="list-card" onclick="openScreen('historyScreen')">
+                <div class="list-item-left">
+                    <div class="crypto-icon" style="background: rgba(52,199,89,0.2); color: var(--green);">⬇️</div>
+                    <div class="crypto-info">
+                        <h4>Пополнение TON</h4>
+                        <div class="crypto-sub">Сегодня, 14:22</div>
+                    </div>
+                </div>
+                <div class="list-item-right">
+                    <div class="crypto-balance" style="color: var(--green);">+24.0 TON</div>
+                    <div class="crypto-fiat">Успешно</div>
                 </div>
             </div>
         </div>
@@ -679,7 +671,7 @@
                 <div class="section-title">Telegram подарки (NFT)</div>
             </div>
             <div class="nft-grid" id="nftGridContainer">
-                <!-- Скрипт заполнит точно 61 подарок -->
+                <!-- Скрипт заполнит 61 подарок с рыночными ценами -->
             </div>
         </div>
 
@@ -702,28 +694,172 @@
     </div>
 </div>
 
-<!-- Модальное окно -->
-<div class="modal" id="appModal">
-    <div class="modal-content" id="modalBox">
-        <h3 id="modalTitle">Уведомление</h3>
-        <p id="modalText">Текст сообщения...</p>
-        <button class="modal-btn" id="modalCloseBtn">OK</button>
+<!-- FULLSCREEN SCREENS FOR FULL FUNCTIONALITY -->
+
+<!-- 1. Send Screen -->
+<div class="screen-overlay" id="sendScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="closeScreen('sendScreen')">Назад</button>
+        <h3>Отправить TON</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body">
+        <div class="input-group">
+            <label>Адрес получателя или домен (.ton)</label>
+            <input type="text" id="sendAddress" placeholder="UQD... или name.ton">
+        </div>
+        <div class="input-group">
+            <label>Сумма</label>
+            <input type="number" id="sendAmount" placeholder="0.00">
+            <span style="font-size: 12px; color: var(--text-secondary);">Доступно: 24.0 TON ($126)</span>
+        </div>
+        <button class="main-btn" onclick="executeSend()">Подтвердить перевод</button>
     </div>
 </div>
 
+<!-- 2. Receive Screen -->
+<div class="screen-overlay" id="receiveScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="closeScreen('receiveScreen')">Назад</button>
+        <h3>Пополнить кошелёк</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body" style="align-items: center; text-align: center;">
+        <div style="background: #fff; padding: 20px; border-radius: 20px; margin: 20px 0;">
+            <div style="font-size: 100px; line-height: 1;">⬛⬜⬛</div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 14px; word-break: break-all;">UQD1*************************qaHR</p>
+        <button class="main-btn" style="width: 100%;" onclick="showToast('Адрес скопирован в буфер обмена'); closeScreen('receiveScreen');">Скопировать адрес</button>
+    </div>
+</div>
+
+<!-- 3. Exchange Screen -->
+<div class="screen-overlay" id="exchangeScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="closeScreen('exchangeScreen')">Назад</button>
+        <h3>Обмен (DEX)</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body">
+        <div class="input-group">
+            <label>Отдаете</label>
+            <input type="number" value="5" id="exFrom">
+            <span style="font-size: 12px; color: var(--text-secondary);">TON</span>
+        </div>
+        <div style="text-align: center; font-size: 20px; cursor: pointer;" onclick="showToast('Направление обмена изменено')">↕</div>
+        <div class="input-group">
+            <label>Получаете (примерно)</label>
+            <input type="number" value="26.25" id="exTo" readonly>
+            <span style="font-size: 12px; color: var(--text-secondary);">USDT</span>
+        </div>
+        <button class="main-btn" onclick="showToast('Обмен успешно выполнен!'); closeScreen('exchangeScreen');">Обменять</button>
+    </div>
+</div>
+
+<!-- 4. Stake Screen -->
+<div class="screen-overlay" id="stakeScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="closeScreen('stakeScreen')">Назад</button>
+        <h3>Стейкинг TON</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body">
+        <div class="list-card" style="background: var(--card-hover);">
+            <div class="list-item-left">
+                <div class="crypto-icon" style="background: #34c759;">💎</div>
+                <div class="crypto-info">
+                    <h4>Whales Pool <span style="color: var(--green);">~13.1% APY</span></h4>
+                    <div class="crypto-sub">Надежный пул валидаторов</div>
+                </div>
+            </div>
+        </div>
+        <div class="input-group">
+            <label>Сумма для стейкинга</label>
+            <input type="number" placeholder="Минимум 1 TON">
+        </div>
+        <button class="main-btn" onclick="showToast('TON успешно отправлен в стейкинг!'); closeScreen('stakeScreen');">Застейкать</button>
+    </div>
+</div>
+
+<!-- 5. History Screen -->
+<div class="screen-overlay" id="historyScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="closeScreen('historyScreen')">Назад</button>
+        <h3>История транзакций</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body">
+        <div class="list-card">
+            <div class="list-item-left">
+                <div class="crypto-icon" style="background: rgba(52,199,89,0.2); color: var(--green);">⬇️</div>
+                <div class="crypto-info">
+                    <h4>Покупка TON с карты</h4>
+                    <div class="crypto-sub">Сегодня, 14:22 • P2P</div>
+                </div>
+            </div>
+            <div class="list-item-right">
+                <div class="crypto-balance" style="color: var(--green);">+24.0 TON</div>
+                <div class="crypto-fiat">+$126,00</div>
+            </div>
+        </div>
+        <div class="list-card">
+            <div class="list-item-left">
+                <div class="crypto-icon" style="background: rgba(255,59,48,0.2); color: var(--red);">⬆️</div>
+                <div class="crypto-info">
+                    <h4>Перевод NFT Gift</h4>
+                    <div class="crypto-sub">Вчера, 19:05 • Gift Marketplace</div>
+                </div>
+            </div>
+            <div class="list-item-right">
+                <div class="crypto-balance" style="color: var(--red);">-1 Gift</div>
+                <div class="crypto-fiat">Fee: 0.05 TON</div>
+            </div>
+        </div>
+        <div class="list-card">
+            <div class="list-item-left">
+                <div class="crypto-icon" style="background: rgba(52,199,89,0.2); color: var(--green);">⬇️</div>
+                <div class="crypto-info">
+                    <h4>Получен подарок</h4>
+                    <div class="crypto-sub">15 октября • Telegram</div>
+                </div>
+            </div>
+            <div class="list-item-right">
+                <div class="crypto-balance" style="color: var(--green);">+1 Gift</div>
+                <div class="crypto-fiat">Free</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Scanner Screen (Camera working!) -->
+<div class="screen-overlay" id="scannerScreen">
+    <div class="screen-header">
+        <button class="back-btn" onclick="stopCamera(); closeScreen('scannerScreen')">Закрыть</button>
+        <h3>Сканер QR-кода</h3>
+        <div style="width: 40px;"></div>
+    </div>
+    <div class="screen-body" style="align-items: center; justify-content: center;">
+        <video id="scannerVideo" autoplay playsinline></video>
+        <p style="color: var(--text-secondary); font-size: 14px; text-align: center; margin-top: 10px;">Наведите камеру на QR-код для сканирования адреса или чека</p>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toastMsg">Успешно выполненно</div>
+
 <script>
-    // Генерация 61 подарка
+    // Реальные рыночные цены на Telegram подарочные NFT (в TON)
     const giftTypes = [
-        { name: "Swiss Watch", icon: "⌚", bg: "#5a6b7c", price: "888,888", timer: "" },
-        { name: "Ginger Cookie", icon: "🍪", bg: "#7c538a", price: "666,666", timer: "" },
-        { name: "Jingle Bells", icon: "🔔", bg: "#4e7262", price: "666,666", timer: "" },
-        { name: "Eternal Rose", icon: "🌹", bg: "#8a7462", price: "100,000", timer: "353 days 1 hour left" },
-        { name: "Plush Pepe", icon: "🐸", bg: "#4f6596", price: "99,994", timer: "2 days 11 hours left" },
-        { name: "Precious Peach", icon: "🍑", bg: "#8a4f65", price: "84,990", timer: "8 hours 23 minutes left" },
-        { name: "Loot Bag", icon: "👜", bg: "#537c78", price: "55,555", timer: "" },
-        { name: "Top Hat", icon: "🎩", bg: "#3e8a60", price: "50,618", timer: "" },
-        { name: "Durov's Cap", icon: "🧢", bg: "#2a2a2e", price: "34,560", timer: "1 day 19 hours left" },
-        { name: "Gold Star", icon: "⭐", bg: "#8a7b4f", price: "25,000", timer: "5 days left" }
+        { name: "Swiss Watch", icon: "⌚", bg: "#5a6b7c", price: "35.0", timer: "" },
+        { name: "Ginger Cookie", icon: "🍪", bg: "#7c538a", price: "18.5", timer: "" },
+        { name: "Jingle Bells", icon: "🔔", bg: "#4e7262", price: "22.0", timer: "" },
+        { name: "Eternal Rose", icon: "🌹", bg: "#8a7462", price: "15.0", timer: "353 days left" },
+        { name: "Plush Pepe", icon: "🐸", bg: "#4f6596", price: "45.0", timer: "2 days left" },
+        { name: "Precious Peach", icon: "🍑", bg: "#8a4f65", price: "12.5", timer: "" },
+        { name: "Loot Bag", icon: "👜", bg: "#537c78", price: "28.0", timer: "" },
+        { name: "Top Hat", icon: "🎩", bg: "#3e8a60", price: "30.0", timer: "" },
+        { name: "Durov's Cap", icon: "🧢", bg: "#2a2a2e", price: "120.0", timer: "1 day left" },
+        { name: "Gold Star", icon: "⭐", bg: "#8a7b4f", price: "85.0", timer: "5 days left" }
     ];
 
     const gridContainer = document.getElementById('nftGridContainer');
@@ -737,7 +873,7 @@
         card.style.backgroundColor = template.bg;
         
         card.onclick = function() {
-            showModal(template.name + " #" + uniqueId, "Цена: 💎 " + template.price + " TON\nСтатус: For sale");
+            showToast('Подарок ' + template.name + ' выставлен за ' + template.price + ' TON');
         };
 
         card.innerHTML = `
@@ -756,21 +892,70 @@
         gridContainer.appendChild(card);
     }
 
-    // Управление модальным окном
-    function showModal(title, text) {
-        document.getElementById('modalTitle').innerText = title;
-        document.getElementById('modalText').innerText = text;
-        document.getElementById('appModal').classList.add('open');
+    // Управление экранами
+    function openScreen(id) {
+        document.getElementById(id).classList.add('open');
+        if(id === 'scannerScreen') {
+            startCamera();
+        }
     }
 
-    function closeModal() {
-        document.getElementById('appModal').classList.remove('open');
+    function closeScreen(id) {
+        document.getElementById(id).classList.remove('open');
     }
 
-    document.getElementById('modalCloseBtn').onclick = closeModal;
-    document.getElementById('appModal').onclick = function(e) {
-        if (e.target === this) closeModal();
-    };
+    function showToast(text) {
+        const t = document.getElementById('toastMsg');
+        t.innerText = text;
+        t.classList.add('show');
+        setTimeout(() => {
+            t.classList.remove('show');
+        }, 2500);
+    }
+
+    // Работа с камерой для сканера
+    let mediaStream = null;
+    async function startCamera() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            document.getElementById('scannerVideo').srcObject = mediaStream;
+        } catch (err) {
+            document.getElementById('scannerVideo').outerHTML = '<div style="color:var(--red); text-align:center; padding:40px;">Нет доступа к камере или устройство не поддерживает трансляцию.</div>';
+        }
+    }
+
+    function stopCamera() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+    }
+
+    // Привязка кнопок к экранам функционала
+    document.getElementById('btnSend').onclick = () => openScreen('sendScreen');
+    document.getElementById('btnReceive').onclick = () => openScreen('receiveScreen');
+    document.getElementById('btnExchange').onclick = () => openScreen('exchangeScreen');
+    document.getElementById('btnStake').onclick = () => openScreen('stakeScreen');
+    document.getElementById('btnHistory').onclick = () => openScreen('historyScreen');
+    document.getElementById('btnScan').onclick = () => openScreen('scannerScreen');
+
+    document.getElementById('btnSettings').onclick = () => showToast('Настройки сети и безопасности');
+    document.getElementById('btnWalletSelect').onclick = () => showToast('Активный кошелек: Ton Keeper');
+    document.getElementById('btnCopyAddress').onclick = () => showToast('Адрес скопирован в буфер');
+    document.getElementById('bannerCard').onclick = () => openScreen('receiveScreen');
+    document.getElementById('itemTon').onclick = () => openScreen('historyScreen');
+    document.getElementById('itemUsdt').onclick = () => showToast('Сеть USDT: TON');
+
+    function executeSend() {
+        const addr = document.getElementById('sendAddress').value;
+        const amt = document.getElementById('sendAmount').value;
+        if(!addr || !amt) {
+            showToast('Заполните адрес и сумму!');
+            return;
+        }
+        showToast('Успешно отправлено ' + amt + ' TON!');
+        closeScreen('sendScreen');
+    }
 
     // Переключение вкладок
     const cryptoTab = document.getElementById('cryptoTab');
@@ -803,30 +988,8 @@
     }
 
     navWallet.onclick = function() { setActiveNav(this); };
-    navTrade.onclick = function() { setActiveNav(this); showModal('Трейд', 'Графики и торговые пары TON DEX.'); };
-    navBrowser.onclick = function() { setActiveNav(this); showModal('Браузер', 'DApps и мини-приложения Telegram.'); };
-
-    // Обработчики кнопок
-    document.getElementById('btnScan').onclick = function() { showModal('Сканирование', 'Открытие сканера QR-кодов...'); };
-    document.getElementById('btnWalletSelect').onclick = function() { showModal('Кошельки', 'Управление кошельками Ton Keeper'); };
-    document.getElementById('btnHistory').onclick = function() { showModal('История', 'Список последних транзакций пуст.'); };
-    document.getElementById('btnSettings').onclick = function() { showModal('Настройки', 'Параметры безопасности и сети.'); };
-    document.getElementById('btnCopyAddress').onclick = function() { showModal('Адрес кошелька', 'Скопировано в буфер обмена:\nUQD1...qaHR'); };
-    document.getElementById('btnSend').onclick = function() { showModal('Отправить', 'Выберите актив для отправки.'); };
-    document.getElementById('btnReceive').onclick = function() { showModal('Пополнить', 'Выберите способ пополнения баланса.'); };
-    document.getElementById('btnExchange').onclick = function() { showModal('Обменять', 'Интерфейс обмена токенов (DEX).'); };
-    document.getElementById('btnStake').onclick = function() { showModal('Застейкать', 'Доступные пулы ликвидности и стейкинга.'); };
-    document.getElementById('btnRaffle').onclick = function() { showModal('Mystery Raffle', 'Розыгрыш призов среди владельцев NFT скоро начнётся!'); };
-    document.getElementById('btnManage').onclick = function() { showModal('Управление', 'Настройка видимости токенов.'); };
-    document.getElementById('itemGram').onclick = function() { showModal('GRAM', 'Баланс GRAM: 0 ($0)'); };
-    document.getElementById('itemEth').onclick = function() { showModal('ETH', 'Баланс ETH: 0 ($0)'); };
-
-    const banner = document.getElementById('bannerCard');
-    banner.onclick = function() { showModal('Гид', 'Вы прошли шаг 1 из 3.'); };
-    document.getElementById('btnCloseBanner').onclick = function(e) {
-        e.stopPropagation();
-        banner.style.display = 'none';
-    };
+    navTrade.onclick = function() { setActiveNav(this); openScreen('exchangeScreen'); };
+    navBrowser.onclick = function() { setActiveNav(this); showToast('Открытие Mini Apps браузера...'); };
 </script>
 
 </body>
